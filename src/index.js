@@ -4,8 +4,7 @@ import {FileDropzone} from './file-dropzone'
 import WishList from "./wish-list";
 import {Container} from "@material-ui/core";
 import Header from "./header";
-import RejectButton from "./item-component-parts/reject-button";
-import ItemName from "./item-component-parts/item-name";
+import {ItemPrice} from "./item-component-parts/Item";
 
 class App extends React.Component {
     constructor(props) {
@@ -73,7 +72,7 @@ const initFileContent = {
 
 ReactDOM.render(
     // <App fileContent={initFileContent}/>,
-    <ItemName name={"aaa"} link="https://www.baidu.com"/>,
+    <ItemPrice/>,
     document.getElementById('root')
 );
   
