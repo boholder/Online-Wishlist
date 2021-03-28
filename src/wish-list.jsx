@@ -35,7 +35,6 @@ class WishList extends React.Component {
     constructor(props) {
         super(props);
         this.state = WishList.divideItems(WishList.fixInvalidItemFields(props.contents));
-        this.state.currencyAbbr = props.currencyAbbr;
         this.state.statistics = this.calculateStatistics();
         this.state.value = 0;
         this.handleChange = this.handleChange.bind(this);

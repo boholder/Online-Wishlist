@@ -5,10 +5,11 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle, IconButton,
+    DialogTitle,
+    IconButton,
     Snackbar
 } from "@material-ui/core";
-import {Close, ShoppingCart} from "@material-ui/icons";
+import {Close, Undo} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function PurchaseButton(props) {
+export default function PutBackButton(props) {
     const [open, setOpen] = useState(false);
     const [purchase, setPurchase] = React.useState(false);
 
@@ -42,16 +43,16 @@ export default function PurchaseButton(props) {
         props.onUndo();
     }
 
-    const id = `${props.type}-item-${props.index}-purchase-button`;
+    const id = `${props.type}-item-${props.index}-put-back-button`;
     const classes = useStyles();
-    const snackbarMsg = 'You confirmed a purchase.';
+    const snackbarMsg = 'You have put a processed item back to open list.';
 
     return (
         <div>
             <Button id={id}
                     onClick={handleClickOpen}
                     aria-label={id}>
-                <ShoppingCart/>
+                <Undo/>
             </Button>
             <Dialog open={open}
                     onClose={handleDialogClose}
@@ -59,7 +60,7 @@ export default function PurchaseButton(props) {
                 <DialogTitle id="form-dialog-title">Confirm</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Congratulations! Are you sure you want to redeem this wish?
+                        Are you sure you want to put it back to open list?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

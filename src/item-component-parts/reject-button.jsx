@@ -6,31 +6,44 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    TextField
+    IconButton,
+    Snackbar,
+    TextField,
+    withStyles
 } from "@material-ui/core";
-import {RemoveShoppingCart} from "@material-ui/icons";
+import {Close, RemoveShoppingCart} from "@material-ui/icons";
+import {makeStyles} from "@material-ui/core/styles";
 
-export default class RejectButton extends React.Component {
+const styles = makeStyles((theme) => ({
+    close: {
+        padding: theme.spacing(0.5),
+    },
+}));
+
+class RejectButton extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             open: false,
             emptyInput: false,
-            input: ''
+            input: '',
+            reject: false
         };
-        this.id = `wishlist-${props.type}-item-${props.index}-reject-button`;
+        this.id = `${props.type}-item-${props.index}-reject-button`;
         this.reasonInput = React.createRef();
         this.handleClickOpen = this.handleClickOpen.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-        this.handleConfirm = this.handleConfirm.bind(this);
+        this.handleDialogClose = this.handleDialogClose.bind(this);
+        this.handleDialogConfirm = this.handleDialogConfirm.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSnackBarClose = this.handleSnackBarClose.bind(this);
+        this.handleUndo = this.handleUndo.bind(this);
     }
 
     handleClickOpen() {
         this.setState({open: true});
     };
 
-    handleClose() {
+    handleDialogClose() {
         this.setState({open: false});
     };
 
@@ -38,17 +51,27 @@ export default class RejectButton extends React.Component {
         this.setState({input: event.target.value});
     }
 
-    handleConfirm() {
+    handleDialogConfirm() {
         if (this.state.input) {
             this.setState({open: false});
             this.props.onConfirm(this.state.input);
+            this.setState({reject: true});
         } else {
             this.setState({emptyInput: true});
             this.reasonInput.current.focus();
         }
     };
 
+    handleSnackBarClose() {
+        this.setState({reject: false});
+    }
+
+    handleUndo() {
+        this.props.onUndo();
+    }
+
     render() {
+        const snackbarMsg = 'You confirmed a purchase.';
         return (
             <div>
                 <Button id={this.id}
@@ -56,7 +79,7 @@ export default class RejectButton extends React.Component {
                     <RemoveShoppingCart/>
                 </Button>
                 <Dialog open={this.state.open}
-                        onClose={this.handleClose}
+                        onClose={this.handleDialogClose}
                         aria-labelledby={`${this.id}-confirm-dialog`}>
                     <DialogTitle id="form-dialog-title">Confirm with a reason</DialogTitle>
                     <DialogContent>
@@ -68,6 +91,7 @@ export default class RejectButton extends React.Component {
                             margin="dense"
                             id={`${this.id}-confirm-dialog-reason-of-rejection-input-field`}
                             label="Reason of rejection"
+                            required
                             type="text"
                             fullWidth
                             multiline
@@ -78,15 +102,43 @@ export default class RejectButton extends React.Component {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
+                        <Button onClick={this.handleDialogClose} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={this.handleConfirm} color="primary">
+                        <Button onClick={this.handleDialogConfirm} color="primary">
                             Confirm
                         </Button>
                     </DialogActions>
                 </Dialog>
+                <Snackbar
+                    key={snackbarMsg}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.reject}
+                    autoHideDuration={6000}
+                    onClose={this.handleSnackBarClose}
+                    message={snackbarMsg}
+                    action={
+                        <React.Fragment>
+                            <Button color="secondary" size="small" onClick={this.handleUndo}>
+                                UNDO
+                            </Button>
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                className={this.props.classes.close}
+                                onClick={this.handleSnackBarClose}
+                            >
+                                <Close/>
+                            </IconButton>
+                        </React.Fragment>
+                    }
+                />
             </div>
         );
     }
 }
+
+export default withStyles(styles)(RejectButton);

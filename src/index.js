@@ -5,14 +5,14 @@ import WishList from "./wish-list";
 import {Container} from "@material-ui/core";
 import Header from "./header";
 import {ItemPrice} from "./item-component-parts/Item";
+import ItemNote from "./item-component-parts/item-note";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             fileContent: {
-                wishList: props.fileContent.wishList,
-                currencyAbbr: props.fileContent.currencyAbbr
+                wishList: props.fileContent.wishList
             }
         };
         this.handleFile = this.handleFile.bind(this);
@@ -24,8 +24,7 @@ class App extends React.Component {
                 <Header/>
                 <FileDropzone
                     onDrop={this.handleFile}/>
-                <WishList contents={this.state.fileContent.wishList}
-                          currencyAbbr={this.state.fileContent.currencyAbbr}/>
+                <WishList contents={this.state.fileContent.wishList}/>
             </Container>
         );
     }
@@ -66,13 +65,12 @@ const initFileContent = {
             "note": "Just want one",
             "rejectReason": "Already got a marine ver."
         }
-    ],
-    currencyAbbr: 'CNY'
+    ]
 };
 
 ReactDOM.render(
     // <App fileContent={initFileContent}/>,
-    <ItemPrice/>,
+    <ItemNote type="accept"/>,
     document.getElementById('root')
 );
   

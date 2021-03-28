@@ -1,42 +1,8 @@
 import React from 'react'
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Button,
-    ButtonGroup, InputAdornment, Link,
-    TextField,
-    Tooltip, Typography
-} from "@material-ui/core";
-import {ExpandMore, RemoveShoppingCart} from "@material-ui/icons";
+import {Accordion, AccordionDetails, AccordionSummary, ButtonGroup, Tooltip} from "@material-ui/core";
+import {ExpandMore} from "@material-ui/icons";
 import PurchaseButton from "./purchase-button";
-
-function ItemName(props) {
-    return (
-        <Link
-            id={`wishlist-${props.type}-item-${props.index}-name`}
-            href={props.link}
-            target="_blank"
-            rel="noreferrer"
-            color="primary">
-            <Typography>
-                {props.name}
-            </Typography>
-        </Link>
-    )
-}
-
-export function ItemPrice(props) {
-    return (
-        <TextField id={`wishlist-${props.type}-item-${props.index}-price`}
-                   label="Price"
-                   endAdornment={
-                       <InputAdornment position="end">
-                           {/*{props.currencyAbbr}*/}
-                           {1122}
-                       </InputAdornment>}/>
-    )
-}
+import RejectButton from "./reject-button";
 
 function ActionButtonGroup(props) {
     return (
@@ -45,7 +11,7 @@ function ActionButtonGroup(props) {
                 <PurchaseButton/>
             </Tooltip>
             <Tooltip title="reject" arrow>
-                <Button aria-label="reject"><RemoveShoppingCart/></Button>
+                <RejectButton/>
             </Tooltip>
         </ButtonGroup>
     );
@@ -56,9 +22,17 @@ export class Item extends React.Component {
         super(props);
     }
 
+    handleChange(prop, event) {
+        this.setState({[prop]: event.target.value});
+    };
+
+    handlePriceChange(event, newValue) {
+
+    }
+
     render() {
         return (
-            <div id={`wishlist-${this.props.type}-item-${this.props.index}`}>
+            <div id={`${this.props.type}-item-${this.props.index}`}>
                 <Accordion>
                     <AccordionSummary
                         expandIcon={<ExpandMore/>}>
