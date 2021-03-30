@@ -9,16 +9,16 @@ import {
     IconButton,
     Snackbar,
     TextField,
+    Tooltip,
     withStyles
 } from "@material-ui/core";
-import {Close, RemoveShoppingCart, ShoppingCart, Undo} from "@material-ui/icons";
-import {makeStyles} from "@material-ui/core/styles";
+import {Close, Error, RemoveShoppingCart, ShoppingCart, Undo} from "@material-ui/icons";
 
-const styles = makeStyles((theme) => ({
+const styles = theme => ({
     close: {
         padding: theme.spacing(0.5),
     },
-}));
+});
 
 class ProcessButton extends React.Component {
     constructor(props) {
@@ -30,7 +30,7 @@ class ProcessButton extends React.Component {
             snackBarOpen: false
         };
 
-        this.id = `${props.list}-item-${props.index}-${props.type}-button`;
+        this.id = `${props.itemId}-${props.type}-button`;
         this.dialogId = `${this.id}-confirm-dialog`;
         this.snackbarMsg = null;
         this.dialogMsg = null;
@@ -46,11 +46,15 @@ class ProcessButton extends React.Component {
                 this.dialogMsg = 'Enter the reason of rejection as a reminder for future consideration.';
                 this.buttonIcon = (<RemoveShoppingCart/>);
                 break;
-            case 'put-back':
+            case 'putback':
                 this.snackbarMsg = 'You put a processed item back to open list.';
                 this.dialogMsg = 'Are you sure you want to put it back to open list?';
                 this.buttonIcon = (<Undo/>);
                 break;
+            default:
+                this.snackbarMsg = 'wrong button type';
+                this.dialogMsg = 'wrong button type';
+                this.buttonIcon = (<Error/>);
         }
 
         this.rejectReasonInputField = React.createRef();
@@ -69,11 +73,6 @@ class ProcessButton extends React.Component {
         this.setState({dialogOpen: false});
     };
 
-    handleDialogConfirm() {
-        this.props.onConfirm();
-        this.setState({snackBarOpen: true});
-    }
-
     handleSnackBarClose() {
         this.setState({snackBarOpen: false});
     }
@@ -86,7 +85,7 @@ class ProcessButton extends React.Component {
         if (this.state.input) {
             this.setState({dialogOpen: false});
             this.props.onConfirm(this.state.input);
-            this.setState({confirmed: true});
+            this.setState({snackBarOpen: true});
         } else {
             this.setState({emptyInput: true});
             this.rejectReasonInputField.current.focus();
@@ -95,14 +94,21 @@ class ProcessButton extends React.Component {
 
 
     render() {
+        const state = this.state;
+        const props = this.props;
         return (
-            <div>
-                <Button id={this.id}
-                        onClick={this.handleDialogOpen}
-                        aria-label={this.id}>
-                    {this.buttonIcon}
-                </Button>
-                <Dialog open={this.state.dialogOpen}
+            <>
+                <Tooltip title={props.type}
+                         arrow>
+                    <IconButton id={this.id}
+                                variant="text"
+                                onClick={this.handleDialogOpen}
+                                aria-label={this.id}
+                                className={props.className}>
+                        {this.buttonIcon}
+                    </IconButton>
+                </Tooltip>
+                <Dialog open={state.dialogOpen}
                         onClose={this.handleDialogClose}
                         aria-labelledby={this.dialogId}>
                     <DialogTitle id={`${this.dialogId}-title`}>Confirm</DialogTitle>
@@ -110,7 +116,7 @@ class ProcessButton extends React.Component {
                         <DialogContentText>
                             {this.dialogMsg}
                         </DialogContentText>
-                        {(this.props.type === 'reject') &&
+                        {(props.type === 'reject') &&
                         (<TextField
                             id={`${this.dialogId}-reason-of-rejection-input-field`}
                             autoFocus
@@ -120,8 +126,8 @@ class ProcessButton extends React.Component {
                             type="text"
                             fullWidth
                             multiline
-                            error={this.state.emptyInput}
-                            helperText={this.state.emptyInput && "Reason should not be empty."}
+                            error={state.emptyInput}
+                            helperText={state.emptyInput && "Reason should not be empty."}
                             ref={this.rejectReasonInputField}
                             onChange={this.handleInputChange}
                         />)}
@@ -142,19 +148,19 @@ class ProcessButton extends React.Component {
                         vertical: 'bottom',
                         horizontal: 'left',
                     }}
-                    open={this.state.snackBarOpen}
+                    open={state.snackBarOpen}
                     autoHideDuration={6000}
                     onClose={this.handleSnackBarClose}
                     message={this.snackbarMsg}
                     action={
                         <React.Fragment>
-                            <Button color="secondary" size="small" onClick={this.props.onUndo}>
+                            <Button color="secondary" size="small" onClick={props.onUndo}>
                                 UNDO
                             </Button>
                             <IconButton
                                 aria-label="close"
                                 color="inherit"
-                                className={this.props.classes.close}
+                                className={props.classes.close}
                                 onClick={this.handleSnackBarClose}
                             >
                                 <Close/>
@@ -162,7 +168,7 @@ class ProcessButton extends React.Component {
                         </React.Fragment>
                     }
                 />
-            </div>
+            </>
         );
     }
 }

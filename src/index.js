@@ -5,7 +5,6 @@ import WishList from "./wish-list";
 import {Container} from "@material-ui/core";
 import Header from "./header";
 import Item from "./item-component-parts/Item";
-import ProcessButton from "./item-component-parts/process-button";
 
 class App extends React.Component {
     constructor(props) {
@@ -70,7 +69,7 @@ const initFileContent = {
 
 ReactDOM.render(
     // <App fileContent={initFileContent}/>,
-    <ProcessButton type="reject"/>,
+    <Item type="purchased" createTime="2020-01-01"/>,
     document.getElementById('root')
 );
   

@@ -23,14 +23,16 @@ function CustomNumberFormat(props) {
     );
 }
 
-export default function ItemPrice(props) {
-    let id = `${props.type}-item-${props.index}-price-input-field`;
+export default function Price(props) {
+    let id = `${props.itemId}-price-input-field`;
 
     return (
         <TextField
+            variant="outlined"
             label="Price"
             id={id}
-            value={123}
+            value={props.value}
+            onChange={props.onChange}
             InputProps={{
                 inputComponent: CustomNumberFormat,
             }}

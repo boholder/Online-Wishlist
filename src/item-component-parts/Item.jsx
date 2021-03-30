@@ -1,98 +1,159 @@
 import React from 'react'
-import {Accordion, AccordionDetails, AccordionSummary, ButtonGroup, Card, Divider, Tooltip} from "@material-ui/core";
-import {ExpandMore} from "@material-ui/icons";
-import PurchaseButton from "./purchase-button";
-import RejectButton from "./reject-button";
-import PutBackButton from "./putback-button";
-import ItemTime from "./item-time";
-import ItemNote from "./item-note";
+import {Card, Divider, Grid, Tooltip, withStyles} from "@material-ui/core";
+import Time from "./time";
+import Note from "./note";
+import ProcessButton from "./process-button";
+import Name from "./name";
+import Price from "./price";
+import {DragHandle} from "@material-ui/icons";
+import {makeStyles} from "@material-ui/core/styles";
+
+const warpTriggerWidth = '568px';
+
+const styles = theme => ({
+    itemGird: {
+        padding: theme.spacing(0.8)
+    },
+    fieldGrid: {
+        minWidth: warpTriggerWidth,
+        marginRight: theme.spacing(0.5),
+        marginTop: theme.spacing(0.1),
+        marginBottom: theme.spacing(0.1)
+    },
+    button: {
+        height: '100%'
+    }
+});
+
+const useStyles = makeStyles({
+    button: {
+        height: '100%'
+    }
+});
 
 function OpenListButtonGroup(props) {
+    const classes = useStyles();
     return (
-        <ButtonGroup>
-            <Tooltip title="buy" arrow>
-                <PurchaseButton list={props.list}
-                                index={props.index}
-                                onConfirm={props.onPurchaseConfirm}
-                                onUndo={props.onPurchaseUndo}
-                />
-            </Tooltip>
-            <Tooltip title="reject" arrow>
-                <RejectButton list={props.list}
-                              index={props.index}
-                              onConfirm={props.onRejectConfirm}
-                              onUndo={props.onRejectUndo}/>
-            </Tooltip>
-        </ButtonGroup>
+        <>
+            <ProcessButton type="purchase"
+                           itemId={props.itemId}
+                           onConfirm={props.onPurchaseConfirm}
+                           onUndo={props.onPurchaseUndo}
+                           className={classes.button}/>
+            <Divider orientation="vertical" flexItem/>
+            <ProcessButton type="reject"
+                           itemId={props.itemId}
+                           onConfirm={props.onRejectConfirm}
+                           onUndo={props.onRejectUndo}
+                           className={classes.button}/>
+        </>
     );
 }
 
 function RejectListNoteGrid(props) {
-
+    return (
+        <Grid container>
+            <Grid item xs={12}>
+                <Note itemId={props.itemId}
+                      type="accept"
+                      value={props.acceptNote}
+                      onChange={props.onAcceptNoteChange}/>
+            </Grid>
+            <Grid item xs={12}>
+                <Note itemId={props.itemId}
+                      type="reject"
+                      value={props.rejectNote}
+                      onChange={props.onRejectNoteChange}/>
+            </Grid>
+        </Grid>
+    )
 }
 
-export default class Item extends React.Component {
+class Item extends React.Component {
     constructor(props) {
         super(props);
-
         this.buttonPart = null;
-        this.timePart = null;
         this.notePart = null;
-        if (props.type === 'open') {
-            // TODO unfinished
-            this.buttonPart = (
-                <OpenListButtonGroup list={props.type}
-                                     index={props.index}
-                                     onPurchaseConfirm={props.onPurchaseConfirm}
-                                     onRejectConfirm={props.onRejectConfirm}
-                                     onPurchaseUndo={props.onPurchaseUndo}
-                                     onRejectUndo={props.onRejectUndo}
-                />);
-            this.timePart = (<ItemTime type="create"
-                                       value={props.createTime}
-                                       list={props.type}
-                                       index={props.index}/>);
-            this.notePart = (<ItemNote type="accept"
-                list={props.type}
-            index={props.index}
-            value={props.acceptNote}
-            onChange={props.onAcceptNoteChange}/>)
-        } else if (props.type === 'purchased' || props.type === 'rejected') {
-            this.buttonPart = (
-                <PutBackButton list={props.type}
-                               index={props.index}
-                               onConfirm={props.onPutBackConfirm}
-                               onUndo={props.onPutBackUndo}/>);
-            this.timePart = (
-                <div>
-                    <ItemTime type="create"
-                              value={props.createTime}
-                              list={props.type}
-                              index={props.index}/>
-                    <Divider orientation="vertical" flexItem/>
-                    <ItemTime type="process"
-                              value={props.processTime}
-                              list={props.type}
-                              index={props.index}/>
-                </div>
-            );
-        }
+        this.timePart = null;
+        this.isProcessedType = props.type === 'purchased' || props.type === 'rejected';
+        this.id = `${props.type}-list-item-${props.index}`;
+        this.initComponentParts(props);
     }
 
-    handleChange(prop, event) {
-        this.setState({[prop]: event.target.value});
-    };
+    initComponentParts(props) {
+        const id = this.id;
+        this.buttonPart = props.type === 'open' ?
+            (<OpenListButtonGroup itemId={id}
+                                  onPurchaseConfirm={props.onPurchaseConfirm}
+                                  onRejectConfirm={props.onRejectConfirm}
+                                  onPurchaseUndo={props.onPurchaseUndo}
+                                  onRejectUndo={props.onRejectUndo}/>) :
+            (<ProcessButton type="putback"
+                            itemId={id}
+                            onConfirm={props.onPutBackConfirm}
+                            onUndo={props.onPutBackUndo}
+                            className={props.classes.button}/>);
 
-    handlePriceChange(event, newValue) {
+        this.timePart = (<>
+            <Time type="create"
+                  value={props.createTime}
+                  itemId={id}
+                  onChange={props.onCreateTimeChange}/>
+            {this.isProcessedType && (
+                <Time type="process"
+                      value={props.processTime}
+                      itemId={id}
+                      onChange={props.onProcessTimeChange}/>)}
+        </>);
 
+        this.notePart = props.type === 'rejected' ?
+            (<RejectListNoteGrid itemId={id}
+                                 acceptNote={props.acceptNote}
+                                 rejectNote={props.rejectNote}
+                                 onAcceptNoteChange={props.onAcceptNoteChange}
+                                 onRejectNoteChange={props.onRejectNoteChange}/>) :
+            (<Note type="accept"
+                   itemId={id}
+                   value={props.acceptNote}
+                   onChange={props.onAcceptNoteChange}/>);
     }
 
     render() {
+        const props = this.props;
+        const id = this.id;
         return (
-            <Card id={`${this.props.type}-item-${this.props.index}`}>
-                {this.buttonPart}
-                {this.timePart}
+            <Card id={id} variant="outlined">
+                <Grid container
+                      alignItems="center"
+                      className={props.classes.itemGird}>
+                    <Grid item container xs
+                          wrap="nowrap"
+                          alignItems="center"
+                          justify="flex-start"
+                          spacing={1}
+                          className={props.classes.fieldGrid}>
+                        {this.buttonPart}
+                        <Name itemId={id}
+                              link={props.link}
+                              value={props.name}
+                              onChange={props.onNameChange}/>
+                        <Price itemId={id}
+                               value={props.price}
+                               onChange={props.onPriceChange}/>
+                        {this.timePart}
+                    </Grid>
+                    <Grid item xs>
+                        {this.notePart}
+                    </Grid>
+                    <Grid item>
+                        <Tooltip title="hold to drag" arrow>
+                            <DragHandle fontSize="large"/>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
             </Card>
         );
     }
 }
+
+export default withStyles(styles)(Item);

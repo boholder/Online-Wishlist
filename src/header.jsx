@@ -1,22 +1,14 @@
 import {Button, Grid, Link} from "@material-ui/core";
 import React from "react";
 import {GitHub} from "@material-ui/icons";
-import {makeStyles} from "@material-ui/core/styles";
 
-const useStyles = makeStyles({
-    gird: {
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    }
-});
-
-export default function Header(props) {
-    const classes = useStyles();
-
+export default function Header() {
     return (
         <div id="header">
             <header>
-                <Grid container={true} className={classes.gird}>
+                <Grid container={true}
+                      alignItems="center"
+                      justify="space-between">
                     <h1>Wish List</h1>
                     <Link href="https://material-ui.com/zh/components/links/"
                           rel="noopener">

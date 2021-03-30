@@ -1,11 +1,11 @@
 import {
     Accordion,
     AccordionDetails,
-    Grid,
-    Typography,
     AccordionSummary,
-    withStyles,
-    TextField
+    Grid,
+    TextField,
+    Typography,
+    withStyles
 } from "@material-ui/core";
 import {ExpandMore, ThumbDown, ThumbUp} from "@material-ui/icons";
 import React from "react";
@@ -37,19 +37,19 @@ const CustomAccordionSummary = withStyles({
     }
 })(AccordionSummary)
 
-export default function ItemNote(props) {
+export default function Note(props) {
     const classes = useStyles();
 
     let icon, rootClass;
     if (props.type === 'accept') {
-        icon = (<ThumbUp className={`${classes.acceptIcon}`}/>);
+        icon = (<ThumbUp className={classes.acceptIcon}/>);
         rootClass = `${classes.root} ${classes.acceptRoot}`;
     } else if (props.type === 'reject') {
-        icon = (<ThumbDown className={`${classes.rejectIcon}`}/>);
+        icon = (<ThumbDown className={classes.rejectIcon}/>);
         rootClass = `${classes.root} ${classes.rejectRoot}`;
     }
 
-    let id = `${props.list}-${props.index}-${props.type}-note`
+    let id = `${props.itemId}-${props.type}-note`
 
     return (
         <Accordion id={id}
@@ -70,8 +70,8 @@ export default function ItemNote(props) {
                 </Grid>
             </CustomAccordionSummary>
             <AccordionDetails>
-                <TextField id={`${id}-input`}
-                    value={props.value}
+                <TextField id={`${id}-input-field`}
+                           value={props.value}
                            onChange={props.onChange}
                            fullWidth
                            multiline/>
