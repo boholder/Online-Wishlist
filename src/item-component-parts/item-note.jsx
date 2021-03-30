@@ -1,24 +1,17 @@
 import {
     Accordion,
     AccordionDetails,
+    Grid,
+    Typography,
     AccordionSummary,
-    Box,
-    Card,
-    Grid, Popover,
-    TextField,
-    Tooltip,
-    Typography
+    withStyles,
+    TextField
 } from "@material-ui/core";
 import {ExpandMore, ThumbDown, ThumbUp} from "@material-ui/icons";
 import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-    gird: {
-        alignItems: 'center',
-        justifyItems: 'flex-start',
-        padding: theme.spacing(1)
-    },
     root: {
         overflow: 'hidden',
     },
@@ -38,20 +31,15 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const CustomAccordionSummary = withStyles({
+    content: {
+        overflow: 'hidden'
+    }
+})(AccordionSummary)
+
 export default function ItemNote(props) {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const open = Boolean(anchorEl);
-
     const classes = useStyles();
+
     let icon, rootClass;
     if (props.type === 'accept') {
         icon = (<ThumbUp className={`${classes.acceptIcon}`}/>);
@@ -62,41 +50,32 @@ export default function ItemNote(props) {
     }
 
     let id = `${props.list}-${props.index}-${props.type}-note`
+
     return (
-        // TODO 用 material-ui-popup-state 替代 https://material-ui.com/zh/components/popover/#popupstate-helper
-        <Box>
-            <Tooltip title="Click to change" arrow>
-                <Card id={id}
-                      variant="outlined"
-                      onClick={handleClick}
-                      className={rootClass}>
-                    <Grid container wrap="nowrap" spacing={1} className={classes.gird}>
-                        <Grid item>
-                            {icon}
-                        </Grid>
-                        <Grid item xs zeroMinWidth>
-                            <Typography noWrap>
-                                我是我aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                            </Typography>
-                        </Grid>
+        <Accordion id={id}
+                   variant="outlined"
+                   className={rootClass}>
+            <CustomAccordionSummary expandIcon={<ExpandMore/>}>
+                <Grid container
+                      wrap='nowrap' spacing={1}
+                      alignItems="center" justify="flex-start">
+                    <Grid item>
+                        {icon}
                     </Grid>
-                </Card>
-            </Tooltip>
-            <Popover
-                id={`${id}-input`}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}>
-                <TextField fullWidth/>
-            </Popover>
-        </Box>
+                    <Grid item xs zeroMinWidth>
+                        <Typography noWrap color="textPrimary">
+                            {props.value}
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </CustomAccordionSummary>
+            <AccordionDetails>
+                <TextField id={`${id}-input`}
+                    value={props.value}
+                           onChange={props.onChange}
+                           fullWidth
+                           multiline/>
+            </AccordionDetails>
+        </Accordion>
     );
 };

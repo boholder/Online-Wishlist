@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PutBackButton(props) {
     const [open, setOpen] = useState(false);
-    const [purchase, setPurchase] = React.useState(false);
+    const [confirmed, setConfirmed] = React.useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -32,18 +32,14 @@ export default function PutBackButton(props) {
 
     const handleDialogConfirm = () => {
         props.onConfirm();
-        setPurchase(true);
+        setConfirmed(true);
     }
 
     const handleSnackBarClose = () => {
-        setPurchase(false);
+        setConfirmed(false);
     }
 
-    const handleUndo = () => {
-        props.onUndo();
-    }
-
-    const id = `${props.type}-item-${props.index}-put-back-button`;
+    const id = `${props.list}-item-${props.index}-put-back-button`;
     const classes = useStyles();
     const snackbarMsg = 'You have put a processed item back to open list.';
 
@@ -78,20 +74,20 @@ export default function PutBackButton(props) {
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                open={purchase}
+                open={confirmed}
                 autoHideDuration={6000}
                 onClose={handleSnackBarClose}
                 message={snackbarMsg}
                 action={
                     <React.Fragment>
-                        <Button color="secondary" size="small" onClick={handleDialogClose}>
+                        <Button color="secondary" size="small" onClick={props.onUndo}>
                             UNDO
                         </Button>
                         <IconButton
                             aria-label="close"
                             color="inherit"
                             className={classes.close}
-                            onClick={handleUndo}
+                            onClick={handleSnackBarClose}
                         >
                             <Close/>
                         </IconButton>

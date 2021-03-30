@@ -4,8 +4,8 @@ import {FileDropzone} from './file-dropzone'
 import WishList from "./wish-list";
 import {Container} from "@material-ui/core";
 import Header from "./header";
-import {ItemPrice} from "./item-component-parts/Item";
-import ItemNote from "./item-component-parts/item-note";
+import Item from "./item-component-parts/Item";
+import ProcessButton from "./item-component-parts/process-button";
 
 class App extends React.Component {
     constructor(props) {
@@ -70,7 +70,7 @@ const initFileContent = {
 
 ReactDOM.render(
     // <App fileContent={initFileContent}/>,
-    <ItemNote type="accept"/>,
+    <ProcessButton type="reject"/>,
     document.getElementById('root')
 );
   

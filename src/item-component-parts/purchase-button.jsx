@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PurchaseButton(props) {
     const [open, setOpen] = useState(false);
-    const [purchase, setPurchase] = React.useState(false);
+    const [confirmed, setConfirmed] = React.useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -31,18 +31,14 @@ export default function PurchaseButton(props) {
 
     const handleDialogConfirm = () => {
         props.onConfirm();
-        setPurchase(true);
+        setConfirmed(true);
     }
 
     const handleSnackBarClose = () => {
-        setPurchase(false);
+        setConfirmed(false);
     }
 
-    const handleUndo = () => {
-        props.onUndo();
-    }
-
-    const id = `${props.type}-item-${props.index}-purchase-button`;
+    const id = `${props.list}-item-${props.index}-purchase-button`;
     const classes = useStyles();
     const snackbarMsg = 'You confirmed a purchase.';
 
@@ -77,20 +73,20 @@ export default function PurchaseButton(props) {
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                open={purchase}
+                open={confirmed}
                 autoHideDuration={6000}
                 onClose={handleSnackBarClose}
                 message={snackbarMsg}
                 action={
                     <React.Fragment>
-                        <Button color="secondary" size="small" onClick={handleDialogClose}>
+                        <Button color="secondary" size="small" onClick={props.onUndo}>
                             UNDO
                         </Button>
                         <IconButton
                             aria-label="close"
                             color="inherit"
                             className={classes.close}
-                            onClick={handleUndo}
+                            onClick={handleSnackBarClose}
                         >
                             <Close/>
                         </IconButton>
