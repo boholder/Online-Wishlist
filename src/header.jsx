@@ -1,10 +1,10 @@
-import {Button, Grid, Link} from "@material-ui/core";
+import {Box, Button, Grid, Link} from "@material-ui/core";
 import React from "react";
 import {GitHub} from "@material-ui/icons";
 
 export default function Header() {
     return (
-        <div id="header">
+        <Box id="header">
             <header>
                 <Grid container={true}
                       alignItems="center"
@@ -20,6 +20,6 @@ export default function Header() {
                 </Grid>
             </header>
             <p>Wish list application.</p>
-        </div>
+        </Box>
     )
 }

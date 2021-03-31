@@ -1,10 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
-import {FileDropzone} from './file-dropzone'
+import File from './file'
 import WishList from "./wish-list";
 import {Container} from "@material-ui/core";
 import Header from "./header";
-import Item from "./item-component-parts/Item";
 
 class App extends React.Component {
     constructor(props) {
@@ -21,8 +20,6 @@ class App extends React.Component {
         return (
             <Container>
                 <Header/>
-                <FileDropzone
-                    onDrop={this.handleFile}/>
                 <WishList contents={this.state.fileContent.wishList}/>
             </Container>
         );
@@ -45,7 +42,15 @@ const initFileContent = {
             "price": 2700,
             "createTime": "2021-03-10",
             "processTime": "",
-            "note": "To play VR game."
+            "acceptNote": "To play VR game."
+        },
+        {
+            "state": "open",
+            "name": "Game: Death Integer",
+            "price": 350,
+            "createTime": "2021-02-15",
+            "processTime": "",
+            "acceptNote": "But don't have a good enough GPU to run it."
         },
         {
             "state": "purchased",
@@ -53,15 +58,15 @@ const initFileContent = {
             "price": 550,
             "createTime": "2021-02-13",
             "processTime": "2021-02-27",
-            "note": "Need a new bag for daily using."
+            "acceptNote": "Need a new bag for daily using."
         },
         {
             "state": "rejected",
-            "name": "TechTeddyBear AirBorne ver.",
+            "name": "TechTeddyBear AirBorne ver",
             "price": 100,
             "createTime": "2021-01-02",
             "processTime": "",
-            "note": "Just want one",
+            "acceptNote": "Just want one",
             "rejectReason": "Already got a marine ver."
         }
     ]
@@ -69,7 +74,6 @@ const initFileContent = {
 
 ReactDOM.render(
     // <App fileContent={initFileContent}/>,
-    <Item type="purchased" createTime="2020-01-01"/>,
+    <File/>,
     document.getElementById('root')
 );
-  

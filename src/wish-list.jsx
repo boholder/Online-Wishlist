@@ -10,7 +10,7 @@ const styles = {
 
 function TabPanel(props) {
     return (
-        <div
+        <Box
             id={`wishlist-tab-panel-${props.index}`}
             hidden={props.value !== props.index}
             role="tabpanel"
@@ -20,7 +20,7 @@ function TabPanel(props) {
                     {props.children}
                 </Box>
             )}
-        </div>
+        </Box>
     );
 }
 
@@ -128,7 +128,7 @@ class WishList extends React.Component {
 
     render() {
         return (
-            <div id="wish-list" className={this.props.classes.root}>
+            <Box id="wish-list" className={this.props.classes.root}>
                 <AppBar position="static">
                     <Tabs value={this.state.value}
                           onChange={this.handleChange}
@@ -155,7 +155,7 @@ class WishList extends React.Component {
                 <TabPanel value={this.state.value} index={3}>
                     Item Three
                 </TabPanel>
-            </div>
+            </Box>
         );
     }
 }
