@@ -2,9 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import FileComponent from './file'
 import WishList from "./wish-list";
-import {Container} from "@material-ui/core";
+import {Box, Container, Typography} from "@material-ui/core";
 import Header from "./header";
 import FileSaver from 'file-saver'
+import Footer from "./footer";
 
 class App extends React.Component {
     constructor(props) {
@@ -49,6 +50,7 @@ class App extends React.Component {
                                    onDownload={this.handleDownload}/>
                     <WishList content={this.state.fileContent}/>
                 </Container>
+                <Footer/>
             </>
         );
     }
