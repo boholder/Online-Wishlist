@@ -1,5 +1,5 @@
 import React from 'react'
-import {AppBar, Box, Button, Container, Tab, Tabs, withStyles} from "@material-ui/core";
+import {AppBar, Box, Button, Tab, Tabs, withStyles} from "@material-ui/core";
 import {Favorite, RemoveShoppingCart, Reorder, ShoppingCart} from "@material-ui/icons";
 
 const styles = {
@@ -13,7 +13,7 @@ function TabPanel(props) {
         <Box
             id={`wishlist-tab-panel-${props.index}`}
             hidden={props.value !== props.index}
-            role="tabpanel"
+            role="tab-panel"
             aria-labelledby={`wishlist-tab-${props.index}`}>
             {props.value === props.index && (
                 <Box p={3}>
@@ -34,32 +34,37 @@ function tabA11yProps(index) {
 class WishList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = WishList.divideItems(WishList.fixInvalidItemFields(props.contents));
-        this.state.statistics = this.calculateStatistics();
-        this.state.value = 0;
+        const content = props.content;
+        this.fixInvalidItems(content.wishlist);
+        this.props.content.statistics = this.calculateStatistics(content.wishlist);
+        // value for tab switching
+        this.state = {value: 0};
         this.handleChange = this.handleChange.bind(this);
     }
 
-    static fixInvalidItemFields(contents = []) {
-        let today = new Date();
+    fixInvalidItems(content = {}) {
+        [content.open, content.purchased, content.rejected]
+            .forEach(this.fixOneList);
+    }
+
+    fixOneList(content = []) {
         const patch = {
             state: 'open',
             name: '',
-            note: '',
+            acceptNote: '',
             price: 0,
-            createTime:
-                `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+            createTime: new Date().toLocaleDateString('en-CA'),
             processTime: ''
         }
-        return contents.map(item => {
-            if (item.name || item.note) {
+        content = content.map(item => {
+            if (item.name || item.acceptNote) {
                 let newItem = {...patch, ...item};
 
                 const validState = new Set(['open', 'purchased', 'rejected']);
                 if (!validState.has(newItem.state)) {
                     newItem.state = 'open';
-                } else if (newItem.state === 'rejected' && !newItem.rejectReason) {
-                    newItem.rejectReason = '';
+                } else if (newItem.state === 'rejected' && !newItem.rejectNote) {
+                    newItem.rejectNote = '';
                 }
 
                 if (isNaN(newItem.price) || newItem.price < 0) {
@@ -73,43 +78,17 @@ class WishList extends React.Component {
         }).filter(item => item);
     }
 
-    static divideItems(contents = []) {
-        let openList = [], purchasedList = [], rejectedList = [];
-        contents.forEach(item => {
-            if (item.state) {
-                switch (item.state) {
-                    case 'open':
-                        openList.push(item);
-                        break;
-                    case 'purchased':
-                        purchasedList.push(item);
-                        break;
-                    case 'rejected':
-                        rejectedList.push(item);
-                        break;
-                    default:
-                        console.log(`invalid item state:${item.state} in ${item}`);
-                }
-            }
-        })
-        return ({
-            openList: openList,
-            purchasedList: purchasedList,
-            rejectedList: rejectedList
-        })
-    }
-
-    calculateStatistics() {
-        let cheapestRemain = Number.MAX_VALUE;
+    calculateStatistics(wishlist) {
+        let cheapest = Number.MAX_VALUE;
         const reducer = (accumulator, currentValue) => accumulator + currentValue;
-        let remain = this.state.openList.map((item) => {
-            cheapestRemain = cheapestRemain > item.price ? item.price : cheapestRemain;
+        let remain = wishlist.open.map((item) => {
+            cheapest = cheapest > item.price ? item.price : cheapest;
             return item.price
         }).reduce(reducer, 0);
-        let spent = this.state.purchasedList.map((item) => {
+        let spent = wishlist.purchased.map((item) => {
             return item.price
         }).reduce(reducer, 0);
-        let saved = this.state.rejectedList.map((item) => {
+        let saved = wishlist.rejected.map((item) => {
             return item.price
         }).reduce(reducer, 0);
         return ({
@@ -117,7 +96,7 @@ class WishList extends React.Component {
             remain: remain,
             spent: spent,
             saved: saved,
-            cheapestRemain: cheapestRemain
+            cheapest: cheapest
         })
 
     }

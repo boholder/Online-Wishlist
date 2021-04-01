@@ -6,7 +6,6 @@ import {GetApp, Publish} from "@material-ui/icons";
 
 const useStyles = makeStyles({
     button: {
-        borderWidth: 1.5,
         width: '100%',
         height: '100%',
         textAlign: 'center',
@@ -77,7 +76,7 @@ function FileDownloadButton(props) {
     )
 }
 
-export default function File(props) {
+export default function FileComponent(props) {
     const classes = useStyles();
     return (
         <Grid container
@@ -85,10 +84,10 @@ export default function File(props) {
               alignItems="center"
               className={classes.rootGird}>
             <Grid item xs className={classes.buttonGrid}>
-                <FileDropZone/>
+                <FileDropZone onUpload={props.onUpload}/>
             </Grid>
             <Grid item xs className={classes.buttonGrid}>
-                <FileDownloadButton/>
+                <FileDownloadButton onDownload={props.onDownload}/>
             </Grid>
         </Grid>
     )
