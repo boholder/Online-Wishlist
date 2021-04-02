@@ -1,4 +1,4 @@
-import {TextField} from "@material-ui/core";
+import {TextField, Tooltip} from "@material-ui/core";
 import React from "react";
 
 export default function Time(props) {
@@ -11,15 +11,16 @@ export default function Time(props) {
     let id = `${props.itemId}-${props.type}-time`;
 
     return (
-        <TextField
-            id={id}
-            variant="outlined"
-            label={label}
-            value={props.value}
-            onChange={props.onChange}
-            InputProps={{
-                readOnly: true,
-            }}
-        />
+        <Tooltip title={props.value}>
+            <TextField
+                id={id}
+                variant="filled"
+                label={label}
+                value={props.value}
+                InputProps={{
+                    readOnly: true,
+                }}
+            />
+        </Tooltip>
     );
 }

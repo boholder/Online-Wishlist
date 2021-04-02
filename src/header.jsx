@@ -8,7 +8,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3, 2),
         marginBottom: 'auto',
         backgroundColor:
-            theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
+            theme.palette.type === 'light' ?
+                theme.palette.grey[200] : theme.palette.grey[800],
     },
 }));
 
@@ -24,6 +25,7 @@ export default function Header() {
                       href="https://material-ui.com/zh/components/links/"
                       rel="noopener">
                     <Button variant="outlined"
+                            disableTouchRipple
                             startIcon={<GitHub/>}>
                         How to use
                     </Button>

@@ -4,12 +4,12 @@ import {makeStyles} from '@material-ui/core/styles';
 import {Button, Grid, Typography} from "@material-ui/core";
 import {GetApp, Publish} from "@material-ui/icons";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     button: {
         width: '100%',
         height: '100%',
         textAlign: 'center',
-        textTransform: 'capitalize'
+        textTransform: 'capitalize',
     },
     rootGird: {
         height: '100px'
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
         width: '100%',
         height: '100%',
     }
-})
+}))
 
 function FileDropZone(props) {
     const classes = useStyles();
@@ -45,6 +45,7 @@ function FileDropZone(props) {
     return (
         <Button id="upload-file-button"
                 variant="outlined"
+                disableTouchRipple
                 startIcon={<Publish/>}
                 className={classes.button}
                 {...getRootProps()}>
@@ -68,7 +69,8 @@ function FileDownloadButton(props) {
                 variant="outlined"
                 startIcon={<GetApp/>}
                 className={classes.button}
-                onClick={props.onDownload}>
+                onClick={props.onDownload}
+                disableTouchRipple>
             <Typography>
                 dump and download current wishlist
             </Typography>

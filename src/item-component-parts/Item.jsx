@@ -7,14 +7,16 @@ import Name from "./name";
 import Price from "./price";
 import {DragHandle} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
+import CryptoJS from "crypto-js";
 
-const warpTriggerWidth = '568px';
+const warpTriggerWidth = '480px';
 
 const styles = theme => ({
     itemGird: {
         padding: theme.spacing(0.8)
     },
     fieldGrid: {
+        height: '100%',
         minWidth: warpTriggerWidth,
         marginRight: theme.spacing(0.5),
         marginTop: theme.spacing(0.1),
@@ -80,6 +82,11 @@ class Item extends React.Component {
         this.initComponentParts(props);
     }
 
+    static calculateKey(name) {
+        const salt = new String(Math.random()).slice(2, 8);
+        return CryptoJS.MD5(name + salt).toString();
+    }
+
     initComponentParts(props) {
         const id = this.id;
         this.buttonPart = props.type === 'open' ?
@@ -97,13 +104,11 @@ class Item extends React.Component {
         this.timePart = (<>
             <Time type="create"
                   value={props.createTime}
-                  itemId={id}
-                  onChange={props.onCreateTimeChange}/>
+                  itemId={id}/>
             {this.isProcessedType && (
                 <Time type="process"
                       value={props.processTime}
-                      itemId={id}
-                      onChange={props.onProcessTimeChange}/>)}
+                      itemId={id}/>)}
         </>);
 
         this.notePart = props.type === 'rejected' ?
@@ -122,7 +127,7 @@ class Item extends React.Component {
         const props = this.props;
         const id = this.id;
         return (
-            <Card id={id} variant="outlined">
+            <Card key={`${props.key}`} id={id} variant="outlined">
                 <Grid container
                       alignItems="center"
                       className={props.classes.itemGird}>
@@ -146,7 +151,7 @@ class Item extends React.Component {
                         {this.notePart}
                     </Grid>
                     <Grid item>
-                        <Tooltip title="hold to drag" arrow>
+                        <Tooltip title="hold and drag" arrow>
                             <DragHandle fontSize="large"/>
                         </Tooltip>
                     </Grid>

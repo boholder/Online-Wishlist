@@ -2,7 +2,6 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
-import {Grid} from "@material-ui/core";
 
 // base on https://github.com/mui-org/material-ui/blob/master/docs/src/pages/getting-started/templates/sticky-footer/StickyFooter.js
 function Copyright() {
@@ -60,7 +59,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3, 2),
         marginTop: 'auto',
         backgroundColor:
-            theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
+            theme.palette.type === 'light' ?
+                theme.palette.grey[200] : theme.palette.grey[800],
     },
 }));
 
@@ -69,9 +69,9 @@ export default function Footer() {
 
     return (
         <footer className={classes.footer}>
-                <Copyright/>
-                <Host/>
-                <Power/>
+            <Copyright/>
+            <Host/>
+            <Power/>
         </footer>
     );
 }
