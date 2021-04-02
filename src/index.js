@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import FileComponent from './file'
-import WishList from "./wish-list";
+import WishList from "./wishlist";
 import {CssBaseline} from "@material-ui/core";
 import Header from "./header";
 import FileSaver from 'file-saver'
@@ -176,7 +176,8 @@ const exampleFileContent = {
             "rejectNote": "Already got a marine ver.",
             "key": "bbff11597f876e9a0d42c54dd52ae227"
         }]
-    }, statistics: {
+    },
+    statistics: {
         "total": 3700, "remain": 3050,
         "spent": 550, "saved": 100, "cheapest": 350
     }

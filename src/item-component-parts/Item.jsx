@@ -127,7 +127,9 @@ class Item extends React.Component {
         const props = this.props;
         const id = this.id;
         return (
-            <Card key={`${props.key}`} id={id} variant="outlined">
+            <Card key={`${props.key}`}
+                  id={id}
+                  variant="outlined">
                 <Grid container
                       alignItems="center"
                       className={props.classes.itemGird}>
@@ -147,13 +149,18 @@ class Item extends React.Component {
                                onChange={props.onPriceChange}/>
                         {this.timePart}
                     </Grid>
-                    <Grid item xs>
-                        {this.notePart}
-                    </Grid>
-                    <Grid item>
-                        <Tooltip title="hold and drag" arrow>
-                            <DragHandle fontSize="large"/>
-                        </Tooltip>
+
+                    <Grid item container xs
+                          wrap="nowrap"
+                          alignItems="center">
+                        <Grid item xs>
+                            {this.notePart}
+                        </Grid>
+                        <Grid item>
+                            <Tooltip title="hold and drag" arrow>
+                                <DragHandle fontSize="large"/>
+                            </Tooltip>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Card>

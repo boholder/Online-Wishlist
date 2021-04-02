@@ -67,10 +67,10 @@ function FileDownloadButton(props) {
     return (
         <Button id="download-file-button"
                 variant="outlined"
+                disableTouchRipple
                 startIcon={<GetApp/>}
                 className={classes.button}
-                onClick={props.onDownload}
-                disableTouchRipple>
+                onClick={props.onDownload}>
             <Typography>
                 dump and download current wishlist
             </Typography>

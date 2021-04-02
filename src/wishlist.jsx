@@ -1,11 +1,15 @@
 import React from 'react'
-import {AppBar, Box, Tab, Tabs, withStyles} from "@material-ui/core";
+import {AppBar, Box, Grid, Tab, Tabs, withStyles} from "@material-ui/core";
 import {Favorite, RemoveShoppingCart, Reorder, ShoppingCart} from "@material-ui/icons";
 import Item from "./item-component-parts/Item";
+import {makeStyles} from "@material-ui/core/styles";
 
 const styles = {
     root: {
         flexGrow: 1,
+    },
+    itemGrid: {
+        width: '100%'
     }
 };
 
@@ -32,7 +36,7 @@ function tabA11yProps(index) {
     };
 }
 
-class WishList extends React.Component {
+class Wishlist extends React.Component {
     constructor(props) {
         super(props);
         // value for tab switching
@@ -46,22 +50,29 @@ class WishList extends React.Component {
     }
 
     renderOneList(listName, list) {
-        return list.map((item, index) => {
-            return (
-                <Item type={listName}
-                      index={index}
-                      key={item.key}
-                      state={item.state}
-                      name={item.name}
-                      link={item.link}
-                      price={item.price}
-                      createTime={item.createTime}
-                      processTime={item.processTime}
-                      acceptNote={item.acceptNote}
-                      rejectNote={item.rejectNote}
-                />
-            );
-        });
+        return (
+            <Grid container spacing={1}>
+                {list.map((item, index) => {
+                    return (
+                        <Grid item
+                              className={this.props.classes.itemGrid}>
+                            <Item type={listName}
+                                  index={index}
+                                  key={item.key}
+                                  state={item.state}
+                                  name={item.name}
+                                  link={item.link}
+                                  price={item.price}
+                                  createTime={item.createTime}
+                                  processTime={item.processTime}
+                                  acceptNote={item.acceptNote}
+                                  rejectNote={item.rejectNote}
+                            />
+                        </Grid>
+                    );
+                })}
+            </Grid>
+        );
     }
 
     render() {
@@ -83,7 +94,7 @@ class WishList extends React.Component {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.value} index={0}>
-                   {this.renderOneList('open', wishlist.open)}
+                    {this.renderOneList('open', wishlist.open)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={1}>
                     {this.renderOneList('purchased', wishlist.purchased)}
@@ -99,4 +110,4 @@ class WishList extends React.Component {
     }
 }
 
-export default withStyles(styles)(WishList);
+export default withStyles(styles)(Wishlist);

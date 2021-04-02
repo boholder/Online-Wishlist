@@ -1,5 +1,5 @@
 import NumberFormat from "react-number-format";
-import {TextField} from "@material-ui/core";
+import {InputAdornment, TextField} from "@material-ui/core";
 import React from "react";
 
 function CustomNumberFormat(props) {
@@ -18,7 +18,6 @@ function CustomNumberFormat(props) {
                 });
             }}
             thousandSeparator
-            prefix="$"
         />
     );
 }
@@ -35,6 +34,7 @@ export default function Price(props) {
             onChange={props.onChange}
             InputProps={{
                 inputComponent: CustomNumberFormat,
+                startAdornment: <InputAdornment position="start">$</InputAdornment>,
             }}
         />
     )
