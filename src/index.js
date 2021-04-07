@@ -13,8 +13,7 @@ export class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            wishlist: props.fileContent.wishlist,
-            statistics: props.fileContent.statistics
+            wishlist: props.fileContent.wishlist
         };
         this.handleUpload = this.handleUpload.bind(this);
         this.handleDownload = this.handleDownload.bind(this);
@@ -29,14 +28,12 @@ export class App extends React.Component {
                 return;
             }
             let wishlist = fileContent.wishlist;
-            const open = App.fixInvalidItems(wishlist.open);
             this.setState({
                 wishlist: {
-                    open: open,
+                    open: App.fixInvalidItems(wishlist.open),
                     purchased: App.fixInvalidItems(wishlist.purchased),
                     rejected: App.fixInvalidItems(wishlist.rejected)
-                },
-                statistics: App.calculateStatistics(wishlist)
+                }
             })
             console.log('file-parsing successful.');
         } catch (error) {
@@ -75,29 +72,6 @@ export class App extends React.Component {
         }).filter(item => item); // filter for removing null value items
     }
 
-    static calculateStatistics(wishlist = {}) {
-        let cheapest = Number.MAX_VALUE;
-        const reducer = (accumulator, currentValue) => accumulator + currentValue;
-        let remain = wishlist.open.map((item) => {
-            cheapest = cheapest > item.price ? item.price : cheapest;
-            return item.price
-        }).reduce(reducer, 0);
-        let spent = wishlist.purchased.map((item) => {
-            return item.price
-        }).reduce(reducer, 0);
-        let saved = wishlist.rejected.map((item) => {
-            return item.price
-        }).reduce(reducer, 0);
-        return ({
-            total: remain + spent + saved,
-            remain: remain,
-            spent: spent,
-            saved: saved,
-            cheapest: cheapest
-        })
-
-    }
-
     // https://www.npmjs.com/package/file-saver
     // use Blob type for transferring if possible, or use data:URI
     handleDownload() {
@@ -108,10 +82,7 @@ export class App extends React.Component {
             date.getHours(),
             date.getMinutes(),
             date.getSeconds()].join('-');
-        let file = new File([JSON.stringify({
-                wishlist: this.state.wishlist,
-                statistics: this.state.statistics
-            })],
+        let file = new File([JSON.stringify({wishlist: this.state.wishlist})],
             `wishlist-dump-${dateString}.json`,
             {type: "application/json;charset=utf-8"});
         FileSaver.saveAs(file);
@@ -123,8 +94,7 @@ export class App extends React.Component {
                 <Header/>
                 <FileComponent onUpload={this.handleUpload}
                                onDownload={this.handleDownload}/>
-                <WishList wishlist={this.state.wishlist}
-                          statistics={this.state.statistics}/>
+                <WishList wishlist={this.state.wishlist}/>
                 <BackToTop/>
                 <Footer/>
             </>
@@ -176,10 +146,6 @@ const exampleFileContent = {
             "rejectNote": "Already got a marine ver.",
             "key": "bbff11597f876e9a0d42c54dd52ae227"
         }]
-    },
-    statistics: {
-        "total": 3700, "remain": 3050,
-        "spent": 550, "saved": 100, "cheapest": 350
     }
 };
 

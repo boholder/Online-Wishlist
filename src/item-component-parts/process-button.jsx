@@ -96,6 +96,68 @@ class ProcessButton extends React.Component {
     render() {
         const state = this.state;
         const props = this.props;
+
+        const rejectReasonInputField = <TextField
+            id={`${this.dialogId}-reason-of-rejection-input-field`}
+            autoFocus
+            margin="dense"
+            required
+            type="text"
+            fullWidth
+            multiline
+            error={state.emptyInput}
+            helperText={state.emptyInput && "Reason should not be empty."}
+            ref={this.rejectReasonInputField}
+            onChange={this.handleInputChange}
+        />;
+
+        const dialog = <Dialog open={state.dialogOpen}
+                               onClose={this.handleDialogClose}
+                               aria-labelledby={this.dialogId}>
+            <DialogTitle id={`${this.dialogId}-title`}>Confirm</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    {this.dialogMsg}
+                </DialogContentText>
+                {(props.type === 'reject') && rejectReasonInputField}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={this.handleDialogClose}>
+                    Cancel
+                </Button>
+                <Button onClick={this.handleDialogConfirm}>
+                    Confirm
+                </Button>
+            </DialogActions>
+        </Dialog>;
+
+        const snackbar = <Snackbar
+            key={this.snackbarMsg}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={state.snackBarOpen}
+            autoHideDuration={6000}
+            onClose={this.handleSnackBarClose}
+            message={this.snackbarMsg}
+            action={
+                <React.Fragment>
+                    <Button color="secondary" size="small" onClick={props.onUndo}>
+                        UNDO
+                    </Button>
+                    <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        className={props.classes.close}
+                        onClick={this.handleSnackBarClose}
+                    >
+                        <Close/>
+                    </IconButton>
+                </React.Fragment>
+            }
+        />;
+
         return (
             <>
                 <Tooltip title={props.type}
@@ -108,66 +170,8 @@ class ProcessButton extends React.Component {
                         {this.buttonIcon}
                     </IconButton>
                 </Tooltip>
-                <Dialog open={state.dialogOpen}
-                        onClose={this.handleDialogClose}
-                        aria-labelledby={this.dialogId}>
-                    <DialogTitle id={`${this.dialogId}-title`}>Confirm</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {this.dialogMsg}
-                        </DialogContentText>
-                        {(props.type === 'reject') &&
-                        (<TextField
-                            id={`${this.dialogId}-reason-of-rejection-input-field`}
-                            autoFocus
-                            margin="dense"
-                            label="Reason of rejection"
-                            required
-                            type="text"
-                            fullWidth
-                            multiline
-                            error={state.emptyInput}
-                            helperText={state.emptyInput && "Reason should not be empty."}
-                            ref={this.rejectReasonInputField}
-                            onChange={this.handleInputChange}
-                        />)}
-
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleDialogClose}>
-                            Cancel
-                        </Button>
-                        <Button onClick={this.handleDialogConfirm}>
-                            Confirm
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                <Snackbar
-                    key={this.snackbarMsg}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    open={state.snackBarOpen}
-                    autoHideDuration={6000}
-                    onClose={this.handleSnackBarClose}
-                    message={this.snackbarMsg}
-                    action={
-                        <React.Fragment>
-                            <Button color="secondary" size="small" onClick={props.onUndo}>
-                                UNDO
-                            </Button>
-                            <IconButton
-                                aria-label="close"
-                                color="inherit"
-                                className={props.classes.close}
-                                onClick={this.handleSnackBarClose}
-                            >
-                                <Close/>
-                            </IconButton>
-                        </React.Fragment>
-                    }
-                />
+                {dialog}
+                {snackbar}
             </>
         );
     }

@@ -83,7 +83,7 @@ class Item extends React.Component {
     }
 
     static calculateKey(name) {
-        const salt = new String(Math.random()).slice(2, 8);
+        const salt = Math.random().toString().slice(2, 10);
         return CryptoJS.MD5(name + salt).toString();
     }
 
@@ -143,7 +143,8 @@ class Item extends React.Component {
                         <Name itemId={id}
                               link={props.link}
                               value={props.name}
-                              onChange={props.onNameChange}/>
+                              onNameChange={props.onNameChange}
+                              onLinkChange={props.onLinkChange}/>
                         <Price itemId={id}
                                value={props.price}
                                onChange={props.onPriceChange}/>

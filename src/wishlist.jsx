@@ -2,7 +2,7 @@ import React from 'react'
 import {AppBar, Box, Grid, Tab, Tabs, withStyles} from "@material-ui/core";
 import {Favorite, RemoveShoppingCart, Reorder, ShoppingCart} from "@material-ui/icons";
 import Item from "./item-component-parts/Item";
-import {makeStyles} from "@material-ui/core/styles";
+import Statistics from "./statistics";
 
 const styles = {
     root: {
@@ -37,25 +37,27 @@ function tabA11yProps(index) {
 }
 
 class Wishlist extends React.Component {
+    // TODO item control handles
     constructor(props) {
         super(props);
         // value for tab switching
         this.state = {value: 0};
         this.handleChange = this.handleChange.bind(this);
-        this.renderOneList = this.renderOneList.bind(this);
+        this.renderList = this.renderList.bind(this);
     }
 
     handleChange(event, newValue) {
         this.setState({value: newValue});
     }
 
-    renderOneList(listName, list) {
+    renderList(listName, list) {
         return (
             <Grid container spacing={1}>
                 {list.map((item, index) => {
                     return (
                         <Grid item
-                              className={this.props.classes.itemGrid}>
+                              className={this.props.classes.itemGrid}
+                              key={item.key}>
                             <Item type={listName}
                                   index={index}
                                   key={item.key}
@@ -94,16 +96,16 @@ class Wishlist extends React.Component {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.value} index={0}>
-                    {this.renderOneList('open', wishlist.open)}
+                    {this.renderList('open', wishlist.open)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={1}>
-                    {this.renderOneList('purchased', wishlist.purchased)}
+                    {this.renderList('purchased', wishlist.purchased)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={2}>
-                    {this.renderOneList('rejected', wishlist.rejected)}
+                    {this.renderList('rejected', wishlist.rejected)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={3}>
-                    // TODO statistics
+                    <Statistics wishlist={props.wishlist}/>
                 </TabPanel>
             </>
         );
