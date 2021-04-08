@@ -114,13 +114,11 @@ export class App extends React.Component {
     }
 
     handleItemChange(list, index, field, newValue) {
-        this.setState(prevState => ({
-            [list]: prevState[list].map((item, _index) =>
+        this.setState({
+            [list]: this.state[list].map((item, _index) =>
                 (_index === index) ? {...item, [field]: newValue} : item
             )
-        }));
-        console.log(list, index, field, newValue);
-        console.log(this.state[list][index])
+        });
     };
 
     render() {
@@ -129,7 +127,9 @@ export class App extends React.Component {
                 <Header/>
                 <FileComponent onUpload={this.handleUpload}
                                onDownload={this.handleDownload}/>
-                <WishList wishlist={this.jointWishlistFromState}
+                <WishList open={this.state.open}
+                          purchased={this.state.purchased}
+                          rejected={this.state.rejected}
                           onChange={this.handleItemChange}/>
                 <BackToTop/>
                 <Footer/>

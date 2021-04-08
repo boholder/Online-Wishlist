@@ -25,14 +25,19 @@ function CustomNumberFormat(props) {
 export default function Price(props) {
     let id = `${props.itemId}-price-input-field`;
 
+    const handleChange = (event) => {
+        props.onChange('price')(Number.parseInt(event.target.value));
+    }
+
     return (
         <TextField
             variant="outlined"
             label="Price"
             id={id}
             value={props.value}
-            onChange={props.onChange}
+            onChange={handleChange}
             autoComplete="off"
+            disabled={props.processed}
             InputProps={{
                 inputComponent: CustomNumberFormat,
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,

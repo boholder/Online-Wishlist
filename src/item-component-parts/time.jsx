@@ -14,9 +14,8 @@ export default function Time(props) {
         <Tooltip title={props.value}>
             <TextField
                 id={id}
-                variant="filled"
+                variant="outlined"
                 label={label}
-                disableUnderline
                 value={props.value}
                 disabled
             />

@@ -8,8 +8,9 @@ import Price from "./price";
 import {DragHandle} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 import CryptoJS from "crypto-js";
+import LinkButton from "./link-button";
 
-const warpTriggerWidth = '480px';
+const warpTriggerWidth = '520px';
 
 const styles = theme => ({
     itemGird: {
@@ -58,14 +59,16 @@ function RejectListNoteGrid(props) {
             <Grid item xs={12}>
                 <Note itemId={props.itemId}
                       type="accept"
+                      processed={props.isProcessedType}
                       value={props.acceptNote}
-                      onChange={props.onAcceptNoteChange}/>
+                      onChange={props.onChange}/>
             </Grid>
             <Grid item xs={12}>
                 <Note itemId={props.itemId}
                       type="reject"
+                      processed={props.isProcessedType}
                       value={props.rejectNote}
-                      onChange={props.onRejectNoteChange}/>
+                      onChange={props.onChange}/>
             </Grid>
         </Grid>
     )
@@ -89,17 +92,24 @@ class Item extends React.Component {
 
     initComponentParts(props) {
         const id = this.id;
-        this.buttonPart = props.type === 'open' ?
-            (<OpenListButtonGroup itemId={id}
-                                  onPurchaseConfirm={props.onPurchaseConfirm}
-                                  onRejectConfirm={props.onRejectConfirm}
-                                  onPurchaseUndo={props.onPurchaseUndo}
-                                  onRejectUndo={props.onRejectUndo}/>) :
-            (<ProcessButton type="putback"
-                            itemId={id}
-                            onConfirm={props.onPutBackConfirm}
-                            onUndo={props.onPutBackUndo}
-                            className={props.classes.button}/>);
+        this.buttonPart =
+            <>
+                {(props.type === 'open') ?
+                    (<OpenListButtonGroup itemId={id}
+                                          onPurchaseConfirm={props.onPurchaseConfirm}
+                                          onRejectConfirm={props.onRejectConfirm}
+                                          onPurchaseUndo={props.onPurchaseUndo}
+                                          onRejectUndo={props.onRejectUndo}/>) :
+                    (<ProcessButton type="putback"
+                                    itemId={id}
+                                    onConfirm={props.onPutBackConfirm}
+                                    onUndo={props.onPutBackUndo}
+                                    className={props.classes.button}/>)}
+                <Divider orientation="vertical" flexItem/>
+                <LinkButton itemId={id}
+                            value={props.link}
+                            onChange={props.onChange}/>
+            </>;
 
         this.timePart = (<>
             <Time type="create"
@@ -111,16 +121,17 @@ class Item extends React.Component {
                       itemId={id}/>)}
         </>);
 
-        this.notePart = props.type === 'rejected' ?
+        this.notePart = (props.type === 'rejected') ?
             (<RejectListNoteGrid itemId={id}
                                  acceptNote={props.acceptNote}
                                  rejectNote={props.rejectNote}
-                                 onAcceptNoteChange={props.onAcceptNoteChange}
-                                 onRejectNoteChange={props.onRejectNoteChange}/>) :
+                                 onChange={props.onChange}
+                                 processed={this.isProcessedType}/>) :
             (<Note type="accept"
                    itemId={id}
                    value={props.acceptNote}
-                   onChange={props.onAcceptNoteChange}/>);
+                   onChange={props.onChange}
+                   processed={this.isProcessedType}/>);
     }
 
     render() {
@@ -133,6 +144,7 @@ class Item extends React.Component {
                 <Grid container
                       alignItems="center"
                       className={props.classes.itemGird}>
+
                     <Grid item container xs
                           wrap="nowrap"
                           alignItems="center"
@@ -141,12 +153,13 @@ class Item extends React.Component {
                           className={props.classes.fieldGrid}>
                         {this.buttonPart}
                         <Name itemId={id}
-                              link={props.link}
-                              value={props.name}
+                              name={props.name}
+                              processed={this.isProcessedType}
                               onChange={props.onChange}/>
                         <Price itemId={id}
+                               processed={this.isProcessedType}
                                value={props.price}
-                               onChange={props.onPriceChange}/>
+                               onChange={props.onChange}/>
                         {this.timePart}
                     </Grid>
 
@@ -162,6 +175,7 @@ class Item extends React.Component {
                             </Tooltip>
                         </Grid>
                     </Grid>
+
                 </Grid>
             </Card>
         );

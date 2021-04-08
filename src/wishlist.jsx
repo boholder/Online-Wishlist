@@ -58,7 +58,7 @@ class Wishlist extends React.Component {
                     return (
                         <Grid item
                               className={this.props.classes.itemGrid}
-                              key={item.key}>
+                              key={`${item.key}-gird`}>
                             <Item type={listName}
                                   index={index}
                                   key={item.key}
@@ -81,7 +81,6 @@ class Wishlist extends React.Component {
 
     render() {
         const props = this.props;
-        const wishlist = props.wishlist;
         return (
             <>
                 <AppBar id="wish-list"
@@ -98,16 +97,18 @@ class Wishlist extends React.Component {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.value} index={0}>
-                    {this.renderList('open', wishlist.open)}
+                    {this.renderList('open', props.open)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={1}>
-                    {this.renderList('purchased', wishlist.purchased)}
+                    {this.renderList('purchased', props.purchased)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={2}>
-                    {this.renderList('rejected', wishlist.rejected)}
+                    {this.renderList('rejected', props.rejected)}
                 </TabPanel>
                 <TabPanel value={this.state.value} index={3}>
-                    <Statistics wishlist={props.wishlist}/>
+                    <Statistics open={props.open}
+                                purchased={props.purchased}
+                                rejected={props.rejected}/>
                 </TabPanel>
             </>
         );

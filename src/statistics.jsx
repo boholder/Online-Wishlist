@@ -1,18 +1,17 @@
 import {Typography} from "@material-ui/core";
 
 export default function Statistics(props) {
-    const wishlist = props.wishlist;
     const calculate = () => {
         let cheapest = Number.MAX_VALUE;
         const reducer = (accumulator, currentValue) => accumulator + currentValue;
-        let remain = wishlist.open.map((item) => {
+        let remain = props.open.map((item) => {
             cheapest = cheapest > item.price ? item.price : cheapest;
             return item.price
         }).reduce(reducer, 0);
-        let spent = wishlist.purchased.map((item) => {
+        let spent = props.purchased.map((item) => {
             return item.price
         }).reduce(reducer, 0);
-        let saved = wishlist.rejected.map((item) => {
+        let saved = props.rejected.map((item) => {
             return item.price
         }).reduce(reducer, 0);
         return ([
