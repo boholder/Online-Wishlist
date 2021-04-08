@@ -12,13 +12,22 @@ import Item from "./item-component-parts/Item";
 export class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            wishlist: props.fileContent.wishlist
+        // have to split wishlist to different lists,
+        // for react component state updating convenience.
+        const wishlist = props.fileContent.wishlist;
+        this.state = {};
+        Object.keys(wishlist).forEach(key => (this.state[key] = wishlist[key]));
+        this.jointWishlistFromState = {
+            open: this.state.open,
+            purchased: this.state.purchased,
+            rejected: this.state.rejected
         };
         this.handleUpload = this.handleUpload.bind(this);
         this.handleDownload = this.handleDownload.bind(this);
+        this.handleItemChange = this.handleItemChange.bind(this);
     }
 
+    // https://www.dropzonejs.com/
     handleUpload(content) {
         try {
             let fileContent = JSON.parse(content);
@@ -27,21 +36,20 @@ export class App extends React.Component {
                     'file-parsing failed: can\'t find "wishlist" field in file.')
                 return;
             }
-            let wishlist = fileContent.wishlist;
-            this.setState({
-                wishlist: {
-                    open: App.fixInvalidItems(wishlist.open),
-                    purchased: App.fixInvalidItems(wishlist.purchased),
-                    rejected: App.fixInvalidItems(wishlist.rejected)
-                }
-            })
+            let uploadedWishlist = fileContent.wishlist;
+            // fix invalid (incomplete fields, invalid values) items
+            Object.keys(uploadedWishlist).forEach((key => {
+                this.setState({
+                    [key]: App.mapFixInvalidItems(uploadedWishlist[key])
+                });
+            }));
             console.log('file-parsing successful.');
         } catch (error) {
             console.error('file-parsing failed: ' + error);
         }
     }
 
-    static fixInvalidItems(list = []) {
+    static mapFixInvalidItems(list = []) {
         const patch = {
             state: 'open',
             name: '',
@@ -82,11 +90,38 @@ export class App extends React.Component {
             date.getHours(),
             date.getMinutes(),
             date.getSeconds()].join('-');
-        let file = new File([JSON.stringify({wishlist: this.state.wishlist})],
+        // deep copy three item lists, mix them into one list object.
+        let wishlistWithOutKey = JSON.parse(JSON.stringify(this.jointWishlistFromState));
+        // remove 'key' field in each item,
+        // because it's randomly generated for React list sort,
+        // it doesn't have reasonable information.
+        Object.keys(wishlistWithOutKey).forEach((key => {
+            wishlistWithOutKey[key] = App.mapRemoveItemKeys(wishlistWithOutKey[key]);
+        }));
+
+        let file = new File(
+            [JSON.stringify({wishlist: wishlistWithOutKey})],
             `wishlist-dump-${dateString}.json`,
             {type: "application/json;charset=utf-8"});
         FileSaver.saveAs(file);
     }
+
+    static mapRemoveItemKeys(list) {
+        return list.map(element => {
+            delete element.key;
+            return element;
+        });
+    }
+
+    handleItemChange(list, index, field, newValue) {
+        this.setState(prevState => ({
+            [list]: prevState[list].map((item, _index) =>
+                (_index === index) ? {...item, [field]: newValue} : item
+            )
+        }));
+        console.log(list, index, field, newValue);
+        console.log(this.state[list][index])
+    };
 
     render() {
         return (<>
@@ -94,12 +129,14 @@ export class App extends React.Component {
                 <Header/>
                 <FileComponent onUpload={this.handleUpload}
                                onDownload={this.handleDownload}/>
-                <WishList wishlist={this.state.wishlist}/>
+                <WishList wishlist={this.jointWishlistFromState}
+                          onChange={this.handleItemChange}/>
                 <BackToTop/>
                 <Footer/>
             </>
         );
     }
+
 }
 
 // ========================================
@@ -114,16 +151,18 @@ const exampleFileContent = {
             "price": 2700,
             "createTime": "2021-03-10",
             "processTime": "",
-            "key": "bac457d09943e0a0640c2e4b2eb3c03a"
+            "rejectNote": "",
+            "key": "bzff11597f876e9a0d42c54dd52ae228",
         }, {
             "state": "open",
             "name": "Death Integer",
             "link": "#",
-            "acceptNote": "But don't have a good enough GPU to run it.",
+            "acceptNote": "Want to play, but don't have a good enough GPU to run it.",
             "price": 350,
             "createTime": "2021-02-15",
             "processTime": "",
-            "key": "20dabb0d13773c16f0cc87138e9fe48e"
+            "rejectNote": "",
+            "key": "bbff11597f876e9a0d4gc54dd52ae227",
         }],
         purchased: [{
             "state": "purchased",
@@ -133,7 +172,8 @@ const exampleFileContent = {
             "price": 550,
             "createTime": "2021-02-13",
             "processTime": "2021-02-27",
-            "key": "f295399deda3947a31fabc309dadf40e"
+            "rejectNote": "",
+            "key": "bbff11597f87k3s20d42c54dd52ae227",
         }],
         rejected: [{
             "state": "rejected",
@@ -144,7 +184,7 @@ const exampleFileContent = {
             "createTime": "2021-01-02",
             "processTime": "2021-01-27",
             "rejectNote": "Already got a marine ver.",
-            "key": "bbff11597f876e9a0d42c54dd52ae227"
+            "key": "bbff11597f876e9a0d42c54dd52ae227",
         }]
     }
 };

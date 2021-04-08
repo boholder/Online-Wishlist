@@ -16,10 +16,9 @@ export default function Time(props) {
                 id={id}
                 variant="filled"
                 label={label}
+                disableUnderline
                 value={props.value}
-                InputProps={{
-                    readOnly: true,
-                }}
+                disabled
             />
         </Tooltip>
     );

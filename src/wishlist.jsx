@@ -3,6 +3,7 @@ import {AppBar, Box, Grid, Tab, Tabs, withStyles} from "@material-ui/core";
 import {Favorite, RemoveShoppingCart, Reorder, ShoppingCart} from "@material-ui/icons";
 import Item from "./item-component-parts/Item";
 import Statistics from "./statistics";
+import {curry} from "lodash";
 
 const styles = {
     root: {
@@ -37,20 +38,20 @@ function tabA11yProps(index) {
 }
 
 class Wishlist extends React.Component {
-    // TODO item control handles
     constructor(props) {
         super(props);
         // value for tab switching
         this.state = {value: 0};
-        this.handleChange = this.handleChange.bind(this);
+        this.handleTabChange = this.handleTabChange.bind(this);
         this.renderList = this.renderList.bind(this);
     }
 
-    handleChange(event, newValue) {
+    handleTabChange(event, newValue) {
         this.setState({value: newValue});
     }
 
     renderList(listName, list) {
+        let curryOnChange = curry(this.props.onChange);
         return (
             <Grid container spacing={1}>
                 {list.map((item, index) => {
@@ -69,6 +70,7 @@ class Wishlist extends React.Component {
                                   processTime={item.processTime}
                                   acceptNote={item.acceptNote}
                                   rejectNote={item.rejectNote}
+                                  onChange={curryOnChange(listName)(index)}
                             />
                         </Grid>
                     );
@@ -86,7 +88,7 @@ class Wishlist extends React.Component {
                         className={props.classes.root}
                         position="static">
                     <Tabs value={this.state.value}
-                          onChange={this.handleChange}
+                          onChange={this.handleTabChange}
                           variant="scrollable"
                           scrollButtons="on">
                         <Tab label="Open" icon={<Favorite/>} {...tabA11yProps(0)} disableTouchRipple/>

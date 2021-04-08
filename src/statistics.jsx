@@ -2,7 +2,7 @@ import {Typography} from "@material-ui/core";
 
 export default function Statistics(props) {
     const wishlist = props.wishlist;
-    const vo = () => {
+    const calculate = () => {
         let cheapest = Number.MAX_VALUE;
         const reducer = (accumulator, currentValue) => accumulator + currentValue;
         let remain = wishlist.open.map((item) => {
@@ -24,14 +24,23 @@ export default function Statistics(props) {
         ])
 
     }
+    const vo = calculate();
+
+    const renderOne = (element) => {
+        return (
+            <Typography id={element[0]} key={element[0]} variant="body1">
+                {element[0]}{': '}{element[1]}
+            </Typography>
+        )
+    }
 
     return (
-        vo().map((value) => {
-                return (
-                    <Typography id={value[0]} key={value[0]}>
-                        {value[0]}{': '}{value[1]}
-                    </Typography>)
-            }
-        )
+        <>
+            {renderOne(vo[0])}
+            {renderOne(vo[1])}
+            {renderOne(vo[2])}
+            {renderOne(vo[3])}
+            {renderOne(vo[4])}
+        </>
     );
 }

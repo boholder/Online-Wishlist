@@ -32,6 +32,7 @@ export default function Price(props) {
             id={id}
             value={props.value}
             onChange={props.onChange}
+            autoComplete="off"
             InputProps={{
                 inputComponent: CustomNumberFormat,
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,

@@ -1,6 +1,9 @@
 import {
     Button,
-    Dialog, DialogActions, DialogContent, DialogContentText,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
     DialogTitle,
     IconButton,
     InputAdornment,
@@ -12,11 +15,7 @@ import {
 } from "@material-ui/core";
 import React, {useState} from "react";
 import {Link as LinkIcon} from "@material-ui/icons";
-import {
-    usePopupState,
-    bindTrigger,
-    bindMenu,
-} from 'material-ui-popup-state/hooks'
+import {bindMenu, bindTrigger, usePopupState,} from 'material-ui-popup-state/hooks'
 
 export default function Name(props) {
     const id = `${props.itemId}-name`;
@@ -24,20 +23,24 @@ export default function Name(props) {
     const popupState = usePopupState({variant: 'popover', popupId: `${id}-link-menu`});
     const [dialogOpen, setDialogOpen] = useState(false);
     const [input, setInput] = useState('');
-    const handleDialogClose = () => {
-        setDialogOpen(false);
-    }
     const handleClickOpen = () => {
         setDialogOpen(true);
     };
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    }
     const handleDialogConfirm = () => {
         setDialogOpen(false);
         if (input) {
-            props.onLinkChange(input);
+            props.onChange('link')(input);
         }
     };
     const handleInputChange = (event) => {
         setInput(event.target.value);
+    }
+
+    const handleFieldChange = (field) => (event) => {
+        props.onChange(field)(event.target.value);
     }
 
     const menu = <Menu {...bindMenu(popupState)}>
@@ -59,6 +62,7 @@ export default function Name(props) {
         type="text"
         fullWidth
         multiline
+        autoComplete="off"
         onChange={handleInputChange}
     />;
 
@@ -104,7 +108,7 @@ export default function Name(props) {
                        variant="outlined"
                        label="Name"
                        value={props.value}
-                       onChange={props.onNameChange}
+                       onChange={handleFieldChange('name')}
                        InputProps={{
                            endAdornment:
                                <InputAdornment position="end">

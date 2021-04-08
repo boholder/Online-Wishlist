@@ -143,8 +143,7 @@ class Item extends React.Component {
                         <Name itemId={id}
                               link={props.link}
                               value={props.name}
-                              onNameChange={props.onNameChange}
-                              onLinkChange={props.onLinkChange}/>
+                              onChange={props.onChange}/>
                         <Price itemId={id}
                                value={props.price}
                                onChange={props.onPriceChange}/>
