@@ -52,6 +52,7 @@ class Wishlist extends React.Component {
 
     renderList(listName, list) {
         let curryOnChange = curry(this.props.onChange);
+        // TODO Drag & Drop 未实现
         return (
             <Grid container spacing={1}>
                 {list.map((item, index) => {
@@ -81,6 +82,7 @@ class Wishlist extends React.Component {
 
     render() {
         const props = this.props;
+        // TODO open页面应有一个添加项按钮
         return (
             <>
                 <AppBar id="wish-list"

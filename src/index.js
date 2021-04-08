@@ -9,6 +9,7 @@ import Footer from "./footer";
 import BackToTop from "./back-to-top-fab";
 import Item from "./item-component-parts/Item";
 
+// TODO PWA未实现
 export class App extends React.Component {
     constructor(props) {
         super(props);
