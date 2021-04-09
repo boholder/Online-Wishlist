@@ -32,6 +32,7 @@ class ProcessButton extends React.Component {
 
         this.id = `${props.itemId}-${props.type}-button`;
         this.dialogId = `${this.id}-confirm-dialog`;
+
         this.snackbarMsg = null;
         this.dialogMsg = null;
         this.buttonIcon = null;
@@ -57,12 +58,17 @@ class ProcessButton extends React.Component {
                 this.buttonIcon = (<Error/>);
         }
 
-        this.rejectReasonInputField = React.createRef();
+        this.isRejectButton = props.type === 'reject';
+        if (this.isRejectButton) {
+            this.rejectReasonInputField = React.createRef();
+        }
         this.handleDialogOpen = this.handleDialogOpen.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
         this.handleDialogConfirm = this.handleDialogConfirm.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSnackBarClose = this.handleSnackBarClose.bind(this);
+        this.submitConfirm = this.submitConfirm.bind(this);
+        this.noticeEmptyInput = this.noticeEmptyInput.bind(this);
     }
 
     handleDialogOpen() {
@@ -82,16 +88,27 @@ class ProcessButton extends React.Component {
     }
 
     handleDialogConfirm() {
-        if (this.state.input) {
-            this.setState({dialogOpen: false});
-            this.props.onConfirm(this.state.input);
-            this.setState({snackBarOpen: true});
+        if (this.isRejectButton) {
+            if (this.state.input) {
+                this.submitConfirm();
+            } else {
+                this.noticeEmptyInput();
+            }
         } else {
-            this.setState({emptyInput: true});
-            this.rejectReasonInputField.current.focus();
+            this.submitConfirm();
         }
     };
 
+    noticeEmptyInput() {
+        this.setState({emptyInput: true});
+        this.rejectReasonInputField.current.focus();
+    }
+
+    submitConfirm() {
+        this.setState({dialogOpen: false});
+        this.props.onConfirm(this.state.input);
+        this.setState({snackBarOpen: true});
+    }
 
     render() {
         const state = this.state;
@@ -119,7 +136,7 @@ class ProcessButton extends React.Component {
                 <DialogContentText>
                     {this.dialogMsg}
                 </DialogContentText>
-                {(props.type === 'reject') && rejectReasonInputField}
+                {this.isRejectButton && rejectReasonInputField}
             </DialogContent>
             <DialogActions>
                 <Button onClick={this.handleDialogClose}>

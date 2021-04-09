@@ -84,7 +84,7 @@ export default function Note(props) {
                            value={props.value}
                            onChange={handleChange}
                            fullWidth
-                           disabled={props.processed}
+                           disabled={props.isProcessed}
                            multiline/>
             </AccordionDetails>
         </Accordion>

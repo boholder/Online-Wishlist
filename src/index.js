@@ -18,6 +18,7 @@ export class App extends React.Component {
         const wishlist = props.fileContent.wishlist;
         this.state = {};
         Object.keys(wishlist).forEach(key => (this.state[key] = wishlist[key]));
+        // do not pass it to child as props, it can't trigger re-render.
         this.jointWishlistFromState = {
             open: this.state.open,
             purchased: this.state.purchased,
@@ -137,7 +138,6 @@ export class App extends React.Component {
             </>
         );
     }
-
 }
 
 // ========================================
@@ -147,7 +147,7 @@ const exampleFileContent = {
         open: [{
             "state": "open",
             "name": "Ocolos Quest2 VR",
-            "link": "#",
+            "link": "http://example.com",
             "acceptNote": "To play VR game.",
             "price": 2700,
             "createTime": "2021-03-10",
@@ -157,7 +157,7 @@ const exampleFileContent = {
         }, {
             "state": "open",
             "name": "Death Integer",
-            "link": "#",
+            "link": "http://example.com",
             "acceptNote": "Want to play, but don't have a good enough GPU to run it.",
             "price": 350,
             "createTime": "2021-02-15",
@@ -168,7 +168,7 @@ const exampleFileContent = {
         purchased: [{
             "state": "purchased",
             "name": "Halikou EDC Bag + COMBOT3000 Molle Parts",
-            "link": "#",
+            "link": "http://example.com",
             "acceptNote": "Need a new bag for daily using.",
             "price": 550,
             "createTime": "2021-02-13",
@@ -179,7 +179,7 @@ const exampleFileContent = {
         rejected: [{
             "state": "rejected",
             "name": "TechTeddyBear AirBorne ver",
-            "link": "#",
+            "link": "http://example.com",
             "acceptNote": "Just want one",
             "price": 100,
             "createTime": "2021-01-02",

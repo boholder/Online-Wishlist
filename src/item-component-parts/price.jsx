@@ -37,7 +37,7 @@ export default function Price(props) {
             value={props.value}
             onChange={handleChange}
             autoComplete="off"
-            disabled={props.processed}
+            disabled={props.isProcessed}
             InputProps={{
                 inputComponent: CustomNumberFormat,
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,

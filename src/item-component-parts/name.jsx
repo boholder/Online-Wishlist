@@ -14,7 +14,7 @@ export default function Name(props) {
                        variant="outlined"
                        label="Name"
                        value={props.name}
-                       disabled={props.processed}
+                       disabled={props.isProcessed}
                        onChange={handleNameChange('name')}
             />
         </Tooltip>
