@@ -20,6 +20,8 @@ const styles = theme => ({
     },
 });
 
+// TODO purchase button是不是这个button的子类？能不能把它们分开。link button呢？
+// TODO 下面那些常量定义，一定能抽出工厂类。
 class ProcessButton extends React.Component {
     constructor(props) {
         super(props);

@@ -10,15 +10,16 @@ import BackToTop from "./back-to-top-fab";
 import Item from "./item-component-parts/Item";
 
 // TODO PWA未实现
+// TODO 可以把字符串常量抽成常量类提高可读性吗？
 export class App extends React.Component {
     constructor(props) {
         super(props);
-        // have to split wishlist to different lists,
+        // Have to split wishlist to different lists,
         // for react component state updating convenience.
         const wishlist = props.fileContent.wishlist;
-        this.state = {};
+        this.state = {memory: []};
         Object.keys(wishlist).forEach(key => (this.state[key] = wishlist[key]));
-        // do not pass it to child as props, it can't trigger re-render.
+        // Do not pass it to child as props, it can't trigger re-render.
         this.jointWishlistFromState = {
             open: this.state.open,
             purchased: this.state.purchased,
@@ -122,6 +123,47 @@ export class App extends React.Component {
             )
         });
     };
+
+    handleItemMove(src, index, dst, rejectNote = '') {
+        const srcList = this.state[src];
+        const dstList = this.state[dst];
+        const item = srcList[index];
+        item.state = dst;
+        item.rejectNote = rejectNote ? rejectNote : item.rejectNote;
+        this.setState({
+            [src]: App.deleteItem(srcList, index),
+            [dst]: App.insertItem(dstList, 0, item),
+            memory: this.state.memory.concat({
+                src: dst,
+                dst: src,
+                dstIndex: index,
+                itemKey: item.key
+            })
+        })
+    }
+
+    static deleteItem(list = [], index) {
+        return [...list.slice(0, index), ...list.slice(index + 1)];
+    }
+
+    static insertItem(list, index, item) {
+        return [...list.slice(0, index), item, ...list.slice(index + 1)];
+    }
+
+    handleUndoItemMove() {
+        const memory = this.state.memory;
+        const {src, dst, dstIndex, itemKey} = memory[memory.length - 1];
+        const srcList = this.state[src];
+        const dstList = this.state[dst];
+        const item = srcList.filter(item => item.key === itemKey);
+        item.state = dst;
+        const srcIndex = srcList.lastIndexOf(item);
+        this.setState({
+            [src]: App.deleteItem(srcList, srcIndex),
+            [dst]: App.insertItem(dstList, dstIndex, item),
+            memory: memory.slice(0, memory.length - 1)
+        });
+    }
 
     render() {
         return (<>
