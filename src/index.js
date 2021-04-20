@@ -1,13 +1,67 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
-import FileComponent from './file'
-import WishList from "./wishlist";
+import FileComponent from './view/file'
+import WishList from "./view/wishlist";
 import {CssBaseline} from "@material-ui/core";
-import Header from "./header";
+import Header from "./view/header";
 import FileSaver from 'file-saver'
-import Footer from "./footer";
-import BackToTop from "./back-to-top-fab";
-import Item from "./item-component-parts/Item";
+import Footer from "./view/footer";
+import BackToTop from "./view/back-to-top-fab";
+import Item from "./view/item-component-parts/Item";
+import {ListName} from "./business/constants";
+import CryptoJS from "crypto-js";
+
+function mapFixInvalidItems(list = []) {
+    const patch = {
+        state: 'open',
+        name: '',
+        link: '',
+        price: 0,
+        createTime: new Date().toLocaleDateString('en-CA'),
+        processTime: '',
+        acceptNote: '',
+        rejectNote: ''
+    }
+    const validState = new Set(['open', 'purchased', 'rejected']);
+
+    return list.map(item => {
+        if (item.name || item.acceptNote) {
+            // use patch to set default value of a valid item
+            let newItem = {...patch, ...item};
+            if (!validState.has(newItem.state)) {
+                newItem.state = 'open';
+            }
+            if (isNaN(newItem.price) || newItem.price < 0) {
+                newItem.price = 0;
+            }
+            newItem.key = calculateMD5(newItem.name);
+            return newItem;
+        } else {
+            return null;
+        }
+    }).filter(item => item); // filter for removing null value items
+}
+
+function calculateMD5(name) {
+    const salt = Math.random().toString().slice(2, 10);
+    return CryptoJS.MD5(name + salt).toString();
+}
+
+function mapRemoveItemKeys(list) {
+    return list.map(element => {
+        delete element.key;
+        return element;
+    });
+}
+
+function deleteItem(list = [], index) {
+    return [...list.slice(0, index), ...list.slice(index + 1)];
+}
+
+function insertItem(list, index, item) {
+    return [...list.slice(0, index), item, ...list.slice(index + 1)];
+}
+
 
 // TODO PWA未实现
 // TODO 可以把字符串常量抽成常量类提高可读性吗？
@@ -18,16 +72,13 @@ export class App extends React.Component {
         // for react component state updating convenience.
         const wishlist = props.fileContent.wishlist;
         this.state = {memory: []};
-        Object.keys(wishlist).forEach(key => (this.state[key] = wishlist[key]));
-        // Do not pass it to child as props, it can't trigger re-render.
-        this.jointWishlistFromState = {
-            open: this.state.open,
-            purchased: this.state.purchased,
-            rejected: this.state.rejected
-        };
+        Object.values(ListName).forEach(listName => (this.state[listName] = wishlist[listName]));
+
         this.handleUpload = this.handleUpload.bind(this);
         this.handleDownload = this.handleDownload.bind(this);
         this.handleItemChange = this.handleItemChange.bind(this);
+        this.handleItemMove = this.handleItemMove.bind(this);
+        this.handleUndoItemMove = this.handleUndoItemMove.bind(this);
     }
 
     // https://www.dropzonejs.com/
@@ -43,7 +94,7 @@ export class App extends React.Component {
             // fix invalid (incomplete fields, invalid values) items
             Object.keys(uploadedWishlist).forEach((key => {
                 this.setState({
-                    [key]: App.mapFixInvalidItems(uploadedWishlist[key])
+                    [key]: mapFixInvalidItems(uploadedWishlist[key])
                 });
             }));
             console.log('file-parsing successful.');
@@ -52,73 +103,39 @@ export class App extends React.Component {
         }
     }
 
-    static mapFixInvalidItems(list = []) {
-        const patch = {
-            state: 'open',
-            name: '',
-            link: '',
-            price: 0,
-            createTime: new Date().toLocaleDateString('en-CA'),
-            processTime: '',
-            acceptNote: '',
-            rejectNote: ''
-        }
-        const validState = new Set(['open', 'purchased', 'rejected']);
-
-        return list.map(item => {
-            if (item.name || item.acceptNote) {
-                // use patch to set default value of a valid item
-                let newItem = {...patch, ...item};
-                if (!validState.has(newItem.state)) {
-                    newItem.state = 'open';
-                }
-                if (isNaN(newItem.price) || newItem.price < 0) {
-                    newItem.price = 0;
-                }
-                newItem.key = Item.calculateKey(newItem.name);
-                return newItem;
-            } else {
-                return null;
-            }
-        }).filter(item => item); // filter for removing null value items
-    }
-
     // https://www.npmjs.com/package/file-saver
     // use Blob type for transferring if possible, or use data:URI
     handleDownload() {
+        // deep copy three item lists, mix them into one list object.
+        let wishlist = {};
+        Object.values(ListName).forEach(name => (wishlist[name] = this.state[name]));
+        let copiedWishlist = JSON.parse(JSON.stringify(wishlist));
+        // remove 'key' field in each item,
+        // because it's randomly generated for React list sort,
+        // it doesn't have reasonable information.
+        Object.keys(copiedWishlist).forEach(key => {
+            copiedWishlist[key] = mapRemoveItemKeys(copiedWishlist[key]);
+        });
+
         const date = new Date();
-        const dateString = [date.getFullYear(),
+        const timeString = [
+            date.getFullYear(),
             date.getMonth() + 1,
             date.getDate(),
             date.getHours(),
             date.getMinutes(),
             date.getSeconds()].join('-');
-        // deep copy three item lists, mix them into one list object.
-        let wishlistWithOutKey = JSON.parse(JSON.stringify(this.jointWishlistFromState));
-        // remove 'key' field in each item,
-        // because it's randomly generated for React list sort,
-        // it doesn't have reasonable information.
-        Object.keys(wishlistWithOutKey).forEach((key => {
-            wishlistWithOutKey[key] = App.mapRemoveItemKeys(wishlistWithOutKey[key]);
-        }));
 
         let file = new File(
-            [JSON.stringify({wishlist: wishlistWithOutKey})],
-            `wishlist-dump-${dateString}.json`,
+            [JSON.stringify({wishlist: copiedWishlist})],
+            `wishlist-dump-${timeString}.json`,
             {type: "application/json;charset=utf-8"});
         FileSaver.saveAs(file);
     }
 
-    static mapRemoveItemKeys(list) {
-        return list.map(element => {
-            delete element.key;
-            return element;
-        });
-    }
-
-    handleItemChange(list, index, field, newValue) {
+    handleItemChange(src, index, field, newValue) {
         this.setState({
-            [list]: this.state[list].map((item, _index) =>
+            [src]: this.state[src].map((item, _index) =>
                 (_index === index) ? {...item, [field]: newValue} : item
             )
         });
@@ -131,8 +148,8 @@ export class App extends React.Component {
         item.state = dst;
         item.rejectNote = rejectNote ? rejectNote : item.rejectNote;
         this.setState({
-            [src]: App.deleteItem(srcList, index),
-            [dst]: App.insertItem(dstList, 0, item),
+            [src]: deleteItem(srcList, index),
+            [dst]: insertItem(dstList, 0, item),
             memory: this.state.memory.concat({
                 src: dst,
                 dst: src,
@@ -140,14 +157,6 @@ export class App extends React.Component {
                 itemKey: item.key
             })
         })
-    }
-
-    static deleteItem(list = [], index) {
-        return [...list.slice(0, index), ...list.slice(index + 1)];
-    }
-
-    static insertItem(list, index, item) {
-        return [...list.slice(0, index), item, ...list.slice(index + 1)];
     }
 
     handleUndoItemMove() {
@@ -159,8 +168,8 @@ export class App extends React.Component {
         item.state = dst;
         const srcIndex = srcList.lastIndexOf(item);
         this.setState({
-            [src]: App.deleteItem(srcList, srcIndex),
-            [dst]: App.insertItem(dstList, dstIndex, item),
+            [src]: deleteItem(srcList, srcIndex),
+            [dst]: insertItem(dstList, dstIndex, item),
             memory: memory.slice(0, memory.length - 1)
         });
     }
@@ -174,7 +183,9 @@ export class App extends React.Component {
                 <WishList open={this.state.open}
                           purchased={this.state.purchased}
                           rejected={this.state.rejected}
-                          onChange={this.handleItemChange}/>
+                          onChange={this.handleItemChange}
+                          onItemMove={this.handleItemMove}
+                          onUndoItemMove={this.handleUndoItemMove}/>
                 <BackToTop/>
                 <Footer/>
             </>

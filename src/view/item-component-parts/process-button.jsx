@@ -13,6 +13,7 @@ import {
     withStyles
 } from "@material-ui/core";
 import {Close, Error, RemoveShoppingCart, ShoppingCart, Undo} from "@material-ui/icons";
+import {ButtonType, ListName} from "../../business/constants";
 
 const styles = theme => ({
     close: {
@@ -20,8 +21,36 @@ const styles = theme => ({
     },
 });
 
-// TODO purchase button是不是这个button的子类？能不能把它们分开。link button呢？
-// TODO 下面那些常量定义，一定能抽出工厂类。
+function getInitValues(type) {
+    let snackbarMsg, dialogMsg, buttonIcon, confirmActionDstList;
+    switch (type) {
+        case ButtonType.PURCHASE:
+            snackbarMsg = 'You confirmed a purchase.';
+            dialogMsg = 'Congratulations! Are you sure you want to redeem this wish?';
+            buttonIcon = (<ShoppingCart/>);
+            confirmActionDstList = ListName.PURCHASED;
+            break;
+        case ButtonType.REJECT:
+            snackbarMsg = 'You confirmed a rejection.';
+            dialogMsg = 'Enter the reason of rejection as a reminder for future consideration.';
+            buttonIcon = (<RemoveShoppingCart/>);
+            confirmActionDstList = ListName.REJECTED;
+            break;
+        case ButtonType.PUTBACK:
+            snackbarMsg = 'You put a processed item back to open list.';
+            dialogMsg = 'Are you sure you want to put it back to open list?';
+            confirmActionDstList = ListName.OPEN;
+            buttonIcon = (<Undo/>);
+            break;
+        default:
+            snackbarMsg = 'wrong button type';
+            dialogMsg = 'wrong button type';
+            buttonIcon = (<Error/>);
+    }
+    return [snackbarMsg, dialogMsg, buttonIcon, confirmActionDstList];
+}
+
+// TODO 把snakebar提升到app层面，防止调用空指针。
 class ProcessButton extends React.Component {
     constructor(props) {
         super(props);
@@ -29,37 +58,19 @@ class ProcessButton extends React.Component {
             dialogOpen: false,
             emptyInput: false,
             input: '',
-            snackBarOpen: false
+            snackBarOpen: false,
+            confirmActionDstList: ''
         };
 
         this.id = `${props.itemId}-${props.type}-button`;
         this.dialogId = `${this.id}-confirm-dialog`;
 
-        this.snackbarMsg = null;
-        this.dialogMsg = null;
+        this.snackbarMsg = '';
+        this.dialogMsg = '';
         this.buttonIcon = null;
-        switch (props.type) {
-            case 'purchase':
-                this.snackbarMsg = 'You confirmed a purchase.';
-                this.dialogMsg = 'Congratulations! Are you sure you want to redeem this wish?';
-                this.buttonIcon = (<ShoppingCart/>);
-                break;
-            case 'reject':
-                this.snackbarMsg = 'You confirmed a rejection.';
-                this.dialogMsg = 'Enter the reason of rejection as a reminder for future consideration.';
-                this.buttonIcon = (<RemoveShoppingCart/>);
-                break;
-            case 'putback':
-                this.snackbarMsg = 'You put a processed item back to open list.';
-                this.dialogMsg = 'Are you sure you want to put it back to open list?';
-                this.buttonIcon = (<Undo/>);
-                break;
-            default:
-                this.snackbarMsg = 'wrong button type';
-                this.dialogMsg = 'wrong button type';
-                this.buttonIcon = (<Error/>);
-        }
-
+        this.confirmActionDstList = '';
+        [this.snackbarMsg, this.dialogMsg,
+            this.buttonIcon, this.confirmActionDstList] = getInitValues(props.type);
         this.isRejectButton = props.type === 'reject';
         if (this.isRejectButton) {
             this.rejectReasonInputField = React.createRef();
@@ -108,7 +119,7 @@ class ProcessButton extends React.Component {
 
     submitConfirm() {
         this.setState({dialogOpen: false});
-        this.props.onConfirm(this.state.input);
+        this.props.onConfirm(this.confirmActionDstList)(this.state.input);
         this.setState({snackBarOpen: true});
     }
 

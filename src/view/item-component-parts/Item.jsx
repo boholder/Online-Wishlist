@@ -6,8 +6,8 @@ import ProcessButton from "./process-button";
 import Name from "./name";
 import Price from "./price";
 import {DragHandle} from "@material-ui/icons";
-import CryptoJS from "crypto-js";
 import LinkButton from "./link-button";
+import {ButtonType, ListName} from "../../business/constants";
 
 const warpTriggerWidth = '520px';
 
@@ -25,15 +25,6 @@ const styles = theme => ({
 });
 
 class Item extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    static calculateKey(name) {
-        const salt = Math.random().toString().slice(2, 10);
-        return CryptoJS.MD5(name + salt).toString();
-    }
-
     render() {
         const props = this.props;
         let isProcessedType = props.type === 'purchased' || props.type === 'rejected';
@@ -42,20 +33,20 @@ class Item extends React.Component {
         let buttonPart = (<>
             {(props.type === 'open') ?
                 (<>
-                    <ProcessButton type="purchase"
+                    <ProcessButton type={ButtonType.PURCHASE}
                                    itemId={id}
-                                   onConfirm={props.onConfirm}
-                                   onUndo={props.onUndo}/>
+                                   onConfirm={props.onItemMove}
+                                   onUndo={props.onUndoItemMove}/>
                     <Divider orientation="vertical" flexItem/>
-                    <ProcessButton type="reject"
+                    <ProcessButton type={ButtonType.REJECT}
                                    itemId={id}
-                                   onConfirm={props.onConfirm}
-                                   onUndo={props.onUndo}/>
+                                   onConfirm={props.onItemMove}
+                                   onUndo={props.onUndoItemMove}/>
                 </>) :
-                (<ProcessButton type="putback"
+                (<ProcessButton type={ButtonType.PUTBACK}
                                 itemId={id}
-                                onConfirm={props.onConfirm}
-                                onUndo={props.onUndo}
+                                onConfirm={props.onItemMove}
+                                onUndo={props.onUndoItemMove}
                                 className={props.classes.button}/>)}
             <Divider orientation="vertical" flexItem/>
             <LinkButton itemId={id}

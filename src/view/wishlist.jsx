@@ -4,15 +4,20 @@ import {Favorite, RemoveShoppingCart, Reorder, ShoppingCart} from "@material-ui/
 import Item from "./item-component-parts/Item";
 import Statistics from "./statistics";
 import {curry} from "lodash";
+import {ListName} from "../business/constants";
+import {makeStyles} from "@material-ui/core/styles";
 
 const styles = {
     root: {
         flexGrow: 1,
     },
+};
+
+const useStyles = makeStyles(({
     itemGrid: {
         width: '100%'
     }
-};
+}));
 
 function TabPanel(props) {
     return (
@@ -37,51 +42,56 @@ function tabA11yProps(index) {
     };
 }
 
+function ItemList(props) {
+
+    const classes = useStyles();
+    // TODO Drag & Drop 未实现
+    return (
+        <Grid container spacing={1}>
+            {props.data.map((item, index) => {
+                return (
+                    <Grid item
+                          key={`${item.key}-gird`}
+                          className={classes.itemGrid}
+                    >
+                        <Item type={props.name}
+                              index={index}
+                              key={item.key}
+                              state={item.state}
+                              name={item.name}
+                              link={item.link}
+                              price={item.price}
+                              createTime={item.createTime}
+                              processTime={item.processTime}
+                              acceptNote={item.acceptNote}
+                              rejectNote={item.rejectNote}
+                              onChange={props.onChange(index)}
+                              onItemMove={props.onItemMove(index)}
+                              onUndoItemMove={props.onUndoItemMove}
+                        />
+                    </Grid>
+                );
+            })}
+        </Grid>
+    );
+}
+
 class Wishlist extends React.Component {
     constructor(props) {
         super(props);
         // value for tab switching
         this.state = {value: 0};
         this.handleTabChange = this.handleTabChange.bind(this);
-        this.renderList = this.renderList.bind(this);
     }
 
     handleTabChange(event, newValue) {
         this.setState({value: newValue});
     }
 
-    renderList(listName, list) {
-        let curryOnChange = curry(this.props.onChange);
-        // TODO Drag & Drop 未实现
-        return (
-            <Grid container spacing={1}>
-                {list.map((item, index) => {
-                    return (
-                        <Grid item
-                              className={this.props.classes.itemGrid}
-                              key={`${item.key}-gird`}>
-                            <Item type={listName}
-                                  index={index}
-                                  key={item.key}
-                                  state={item.state}
-                                  name={item.name}
-                                  link={item.link}
-                                  price={item.price}
-                                  createTime={item.createTime}
-                                  processTime={item.processTime}
-                                  acceptNote={item.acceptNote}
-                                  rejectNote={item.rejectNote}
-                                  onChange={curryOnChange(listName)(index)}
-                            />
-                        </Grid>
-                    );
-                })}
-            </Grid>
-        );
-    }
-
     render() {
         const props = this.props;
+        let curryOnChange = curry(props.onChange);
+        let curryOnItemMove = curry(props.onItemMove);
         // TODO open页面应有一个添加项按钮
         return (
             <>
@@ -99,13 +109,25 @@ class Wishlist extends React.Component {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.value} index={0}>
-                    {this.renderList('open', props.open)}
+                    <ItemList name={ListName.OPEN}
+                              data={props.open}
+                              onChange={curryOnChange(ListName.OPEN)}
+                              onItemMove={curryOnItemMove(ListName.OPEN)}
+                              onUndoItemMove={props.onUndoItemMove}/>
                 </TabPanel>
                 <TabPanel value={this.state.value} index={1}>
-                    {this.renderList('purchased', props.purchased)}
+                    <ItemList name={ListName.PURCHASED}
+                              data={props.purchased}
+                              onChange={curryOnChange(ListName.PURCHASED)}
+                              onItemMove={curryOnItemMove(ListName.PURCHASED)}
+                              onUndoItemMove={props.onUndoItemMove}/>
                 </TabPanel>
                 <TabPanel value={this.state.value} index={2}>
-                    {this.renderList('rejected', props.rejected)}
+                    <ItemList name={ListName.REJECTED}
+                              data={props.rejected}
+                              onChange={curryOnChange(ListName.REJECTED)}
+                              onItemMove={curryOnItemMove(ListName.REJECTED)}
+                              onUndoItemMove={props.onUndoItemMove}/>
                 </TabPanel>
                 <TabPanel value={this.state.value} index={3}>
                     <Statistics open={props.open}
